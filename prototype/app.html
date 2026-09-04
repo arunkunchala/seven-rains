@@ -85,6 +85,11 @@ body{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;color:var(--p
 .panel svg{position:absolute;inset:0;width:100%;height:100%}
 .ht{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
   background:radial-gradient(rgba(0,0,0,.55) .7px,transparent .8px) 0 0/4px 4px}
+.phone[data-art="film"] .ht{mix-blend-mode:overlay;opacity:.18;
+  background:radial-gradient(rgba(255,255,255,.5) .5px,transparent .6px) 0 0/2px 2px}
+.phone[data-art="film"] .panel{border-width:2px;box-shadow:0 0 0 1px rgba(232,220,196,.45),0 8px 22px rgba(0,0,0,.55)}
+.phone[data-art="film"] .cap{border-width:2px;background:rgba(12,10,8,.88)}
+.phone[data-art="film"] .bal{border-width:2.5px}
 .wx{position:absolute;inset:-20% 0 0 0;pointer-events:none;opacity:.35;
   background:repeating-linear-gradient(104deg,transparent 0 9px,rgba(200,225,245,.55) 9px 10px,transparent 10px 22px);
   animation:fall .55s linear infinite}
@@ -159,6 +164,8 @@ body{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;color:var(--p
 
 /* RUNNER */
 .run{position:absolute;inset:0;overflow:hidden}
+.runbg{position:absolute;left:0;right:0;top:0;height:52%;overflow:hidden}
+.runbg svg{width:100%;height:100%;display:block}
 .run .road{position:absolute;left:0;right:0;top:42%;bottom:0;clip-path:polygon(40% 0,60% 0,118% 100%,-18% 100%);background:var(--road,#232C36)}
 .run .stripes{position:absolute;left:0;right:0;top:42%;bottom:0;clip-path:polygon(40% 0,60% 0,118% 100%,-18% 100%);
   background:repeating-linear-gradient(180deg,transparent 0 30px,var(--stripe,rgba(239,230,210,.16)) 30px 44px)}
@@ -437,115 +444,633 @@ var SR_SC={
 };
 
 /* =================================================================
-   STORY 2 — PROJECT K : THE LAST DROP
-   Placeholder figures. No likeness, no film-derived designs.
-   Green is absent from this slice by spec (reserved for S06-02).
+   PROJECT K — CINEMATIC ART KIT
+   Genre: sun-blasted wasteland. Original designs throughout —
+   no likenesses, no franchise-specific characters or vehicles.
+   Lighting model: hard warm key + cool sky bounce on the shadow side.
+   Green is absent by spec until the archive reveal (S06-02).
    ================================================================= */
-var K_CH={
-  hunter:{skin:'#A8703C',shirt:'#3A322A',hair:'#151009',style:'long',shoulder:1,pauldron:'#5A4A38',beard:1,beardCol:'#241C12',shade:.55},
-  hunterC:{skin:'#A8703C',shirt:'#3A322A',hair:'#151009',style:'long',beard:1,beardCol:'#241C12',shade:.5},
-  giant:{skin:'#8E6A46',shirt:'#4A3A2A',hair:'#D8D2C4',style:'long',beard:2,beardCol:'#D8D2C4',pauldron:'#6A5238',shade:.68},
-  carrier:{skin:'#B07C46',shirt:'#7A6A4E',hair:'#1A1208',style:'wrap',goggles:1,kid:1,shade:.5},
-  broker:{skin:'#96682F',shirt:'#4A4038',hair:'#2A2018',style:'wrap',shade:.6,moust:1},
-  officer:{skin:'#9A7448',shirt:'#D8D4CC',visor:1,helmet:'#E2DED6',visorCol:'#23232A',visorLit:'#D6402E',shade:.35,collarFill:'#B8B4AC'},
-  trooper:{skin:'#9A7448',shirt:'#BCB8B0',visor:1,helmet:'#CFCBC3',visorCol:'#23232A',visorLit:'#D6402E',shade:.4,collarFill:'#A8A49C'}
+var gid=0;
+function _q(){return 'q'+(gid++)}
+function KSVG(w,h,fn){var p='k'+(gid++)+'_';
+  return '<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid slice">'+fn(p,w,h)+'</svg>';}
+function lgr(id,x1,y1,x2,y2,st){return '<linearGradient id="'+id+'" x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'">'+
+  st.map(function(s){return '<stop offset="'+s[0]+'" stop-color="'+s[1]+'"'+(s[2]!==undefined?' stop-opacity="'+s[2]+'"':'')+'/>'}).join('')+'</linearGradient>';}
+function rgr(id,cx,cy,r,st){return '<radialGradient id="'+id+'" cx="'+cx+'" cy="'+cy+'" r="'+r+'" gradientUnits="userSpaceOnUse">'+
+  st.map(function(s){return '<stop offset="'+s[0]+'" stop-color="'+s[1]+'"'+(s[2]!==undefined?' stop-opacity="'+s[2]+'"':'')+'/>'}).join('')+'</radialGradient>';}
+
+/* --- palette --- */
+var P={
+  skyHi:'#6E93AE', skyMid:'#C9A472', skyLo:'#F0D5A4', sunC:'#FFF6DE', sunB:'#FFCE7A',
+  far:'#A98A66', mid:'#6E5236', near:'#33220F', deep:'#120B05',
+  skin:'#BE854C', skinD:'#5A3418', skinDD:'#33190A', skinL:'#EFC38A',
+  cloth:'#7A6A52', clothD:'#3A3126', cloth2:'#5A4634',
+  metal:'#8E8677', metalD:'#4A453C', metalL:'#D6CFBE', rust:'#9E5227',
+  teal:'#3FA5A8', tealD:'#1E5A5E', red:'#E04B32', bone:'#E6DCC4',
+  coolRim:'#8FD3E6', warmRim:'#FFD79A',
+  intAmb:'#2B3A44', intDeep:'#131C22'
 };
-/* abstract greybox vehicle — deliberately not a film design */
-function rig(x,y,s,o){o=o||{};
-  return '<g transform="translate('+x+','+y+') scale('+s+')"><g stroke="'+INK+'" stroke-width="5" stroke-linejoin="round">'+
-  '<path d="M-70,20 L-50,-24 L50,-24 L70,20 Z" fill="#7A4A28"/>'+
-  '<path d="M-46,-24 L-34,-52 L34,-52 L46,-24 Z" fill="#4A7A7E"/>'+
-  '<rect x="-20" y="-46" width="40" height="16" fill="'+INK+'"/>'+
-  '<rect x="-78" y="14" width="26" height="14" fill="#3A3026"/><rect x="52" y="14" width="26" height="14" fill="#3A3026"/>'+
-  '<circle cx="-46" cy="36" r="22" fill="#2A2118"/><circle cx="46" cy="36" r="22" fill="#2A2118"/>'+
-  '<circle cx="-46" cy="36" r="9" fill="#C8873A"/><circle cx="46" cy="36" r="9" fill="#C8873A"/>'+
-  (o.lit?'<rect x="-14" y="-42" width="28" height="6" fill="#4A7A7E"/>':'')+
-  '</g></g>';}
-function complexTower(){var s='';
-  for(var i=0;i<7;i++){var w=200-i*22,x=150-w/2,y=-10+i*13;
-    s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="13" fill="'+(i%2?'#B8B0A4':'#CFC7B8')+'" stroke="'+INK+'" stroke-width="2.5"/>';}
-  return s+'<path d="M150,84 L150,120" stroke="'+INK+'" stroke-width="4"/>';}
-function stall(x,y,w,h,c){return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'" stroke="'+INK+'" stroke-width="3"/>'+
-  '<path d="M'+(x-6)+','+y+' L'+(x+w+6)+','+y+' L'+(x+w-4)+','+(y-14)+' L'+(x+4)+','+(y-14)+'Z" fill="#8A5A32" stroke="'+INK+'" stroke-width="3"/></g>';}
-function holoBox(cx,cy,s,st){
-  var col=st==='dmg'?'#D6402E':'#4A7A7E';
-  return '<g transform="translate('+cx+','+cy+') scale('+s+')">'+
-  '<path d="M-52,-34 L52,-34 L52,40 L-52,40 Z" fill="#2A2118" stroke="'+INK+'" stroke-width="5"/>'+
-  '<path d="M-52,-34 L0,-56 L52,-34" fill="#3A3026" stroke="'+INK+'" stroke-width="5"/>'+
-  '<rect x="-40" y="-20" width="80" height="12" fill="#5A4A38" stroke="'+INK+'" stroke-width="3"/>'+
-  '<circle cx="0" cy="14" r="15" fill="none" stroke="'+col+'" stroke-width="5"/>'+
-  '<path d="M0,-1 Q11,14 0,29 Q-11,14 0,-1Z" fill="'+col+'"/>'+
-  '<path d="M-52,40 L52,40" stroke="'+INK+'" stroke-width="6"/></g>';}
-function scanline(y){return '<path d="M0,'+y+' L300,'+y+'" stroke="#4A7A7E" stroke-width="2" opacity=".55" stroke-dasharray="7 9"/>';}
-function sun(cx,cy,r){return '<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="#F0D69A"/><circle cx="'+cx+'" cy="'+cy+'" r="'+(r*1.7)+'" fill="#F0D69A" opacity=".22"/>';}
-function dune(y,c){return '<path d="M0,'+y+' Q80,'+(y-22)+' 150,'+(y-6)+' Q230,'+(y+12)+' 300,'+(y-14)+' L300,300 L0,300Z" fill="'+c+'"/>';}
-function ruinBlock(x,y,w,h,c){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'" stroke="'+INK+'" stroke-width="3"/>';}
+
+/* --- shared defs --- */
+function kDefs(p,o){o=o||{};
+  var d='<defs>';
+  d+=lgr(p+'sky',0,0,0,1,[[0,P.skyHi],[.42,P.skyMid],[1,P.skyLo]]);
+  d+=lgr(p+'skyN',0,0,0,1,[[0,'#0E1A24'],[.55,'#20303C'],[1,'#3E4A46']]);
+  d+=rgr(p+'sun',o.sx||240,o.sy||120,150,[[0,P.sunC,1],[.18,P.sunB,.9],[.55,P.sunB,.22],[1,P.sunB,0]]);
+  d+=lgr(p+'far',0,0,0,1,[[0,P.far],[1,'#8E7050']]);
+  d+=lgr(p+'mid',0,0,0,1,[[0,P.mid],[1,'#5B4229']]);
+  d+=lgr(p+'near',0,0,0,1,[[0,P.near],[1,P.deep]]);
+  d+=lgr(p+'gnd',0,0,0,1,[[0,'#C9A26E'],[.5,'#9A7448'],[1,'#4E3720']]);
+  d+=lgr(p+'skin',.15,0,.95,1,[[0,P.skinL],[.34,P.skin],[.78,P.skinD],[1,P.skinDD]]);
+  d+=lgr(p+'cloth',.2,0,.9,1,[[0,P.cloth],[.55,P.cloth2],[1,P.clothD]]);
+  d+=lgr(p+'metal',0,0,1,1,[[0,P.metalL],[.35,P.metal],[1,P.metalD]]);
+  d+=lgr(p+'rust',0,0,.6,1,[[0,'#B96A33'],[1,'#5E3018']]);
+  d+=lgr(p+'glass',0,0,1,1,[[0,'#BFE4EE'],[.4,'#4E7E8C'],[1,'#1B2E36']]);
+  d+=lgr(p+'ray',0,0,0,1,[[0,'#FFE6B8',.5],[1,'#FFE6B8',0]]);
+  d+=rgr(p+'pool',150,150,150,[[0,'#FFD9A0',.55],[.6,'#C98A4E',.12],[1,'#000',0]]);
+  d+=rgr(p+'vig',150,140,220,[[0,'#000',0],[.62,'#000',.1],[1,'#000',.72]]);
+  d+='<filter id="'+p+'b6"><feGaussianBlur stdDeviation="6"/></filter>';
+  d+='<filter id="'+p+'b14"><feGaussianBlur stdDeviation="14"/></filter>';
+  d+='<filter id="'+p+'b3"><feGaussianBlur stdDeviation="3"/></filter>';
+  d+='<filter id="'+p+'gr"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="3" result="n"/>'+
+     '<feColorMatrix in="n" type="saturate" values="0"/></filter>';
+  return d+'</defs>';
+}
+/* --- atmosphere --- */
+function kSky(p,w,h,night){return '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+(night?'skyN':'sky')+')"/>';}
+function kSun(p,w,h,x,y,r){return '<circle cx="'+x+'" cy="'+y+'" r="'+(r*3.2)+'" fill="url(#'+p+'sun)"/>'+
+  '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+P.sunC+'" filter="url(#'+p+'b6)"/>';}
+function kRidge(pts,fill,op,blur,p){return '<path d="'+pts+'" fill="'+fill+'"'+(op!==undefined?' opacity="'+op+'"':'')+
+  (blur?' filter="url(#'+p+'b3)"':'')+'/>';}
+function kHaze(y,w,h,c,op){return '<rect x="0" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+(c||'#F0D5A4')+'" opacity="'+(op||.3)+'"/>';}
+function kRay(p,x,y,w1,w2,len,op){return '<path d="M'+(x-w1)+','+y+' L'+(x+w1)+','+y+' L'+(x+w2)+','+(y+len)+' L'+(x-w2)+','+(y+len)+'Z" '+
+  'fill="url(#'+p+'ray)" opacity="'+(op||.55)+'" filter="url(#'+p+'b6)" style="mix-blend-mode:screen"/>';}
+function kMotes(p,n,w,h,seed){var s='',r=seed||1;
+  for(var i=0;i<n;i++){r=(r*9301+49297)%233280;var x=(r/233280)*w;r=(r*9301+49297)%233280;var y=(r/233280)*h;
+    r=(r*9301+49297)%233280;var rr=.7+(r/233280)*1.9;
+    s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+rr.toFixed(1)+'" fill="#FFE9C4" opacity="'+(.18+(r/233280)*.4).toFixed(2)+'"/>';}
+  return s;}
+function kGrain(p,w,h,op){return '<rect width="'+w+'" height="'+h+'" filter="url(#'+p+'gr)" opacity="'+(op||.16)+'" style="mix-blend-mode:overlay"/>';}
+function kGrade(p,w,h){return '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'vig)"/>'+kGrain(p,w,h,.15);}
+function kDunes(p,y,w,h){
+  return kRidge('M0,'+(y-6)+' Q'+(w*.22)+','+(y-30)+' '+(w*.46)+','+(y-10)+' Q'+(w*.72)+','+(y+10)+' '+w+','+(y-16)+' L'+w+','+h+' L0,'+h+'Z','url(#'+p+'far)',.85,1,p)+
+    kRidge('M0,'+(y+22)+' Q'+(w*.3)+','+(y-2)+' '+(w*.56)+','+(y+20)+' Q'+(w*.8)+','+(y+40)+' '+w+','+(y+14)+' L'+w+','+h+' L0,'+h+'Z','url(#'+p+'mid)',.95)+
+    '<rect x="0" y="'+(y+52)+'" width="'+w+'" height="'+(h-y-52)+'" fill="url(#'+p+'gnd)"/>';}
+
+/* --- structure kit --- */
+function kSlab(x,y,w,h,f,p,dmg){
+  var s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+f+'"/>';
+  s+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="4" fill="'+P.metalL+'" opacity=".22"/>';
+  s+='<rect x="'+(x+w-5)+'" y="'+y+'" width="5" height="'+h+'" fill="#000" opacity=".3"/>';
+  if(dmg)s+='<path d="M'+(x+w*.2)+','+y+' l'+(w*.14)+','+(h*.3)+' l'+(-w*.08)+','+(h*.16)+'" stroke="#000" stroke-width="2.5" fill="none" opacity=".45"/>';
+  return s;}
+function kWindows(x,y,w,h,cols,rows,c,p){var s='';
+  for(var r=0;r<rows;r++)for(var q=0;q<cols;q++){
+    if(((r*7+q*5)%4)<2)continue;
+    s+='<rect x="'+(x+4+q*(w/cols))+'" y="'+(y+5+r*(h/rows))+'" width="'+(w/cols-7)+'" height="'+(h/rows-8)+'" fill="'+(c||'#2A1C10')+'" opacity=".8"/>';}
+  return s;}
+function kComplex(p,w,cy){
+  var s='';
+  for(var i=0;i<8;i++){var ww=w*1.05-i*(w*.1),x=w/2-ww/2,y=cy-i*15;
+    s+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="15" fill="'+(i%2?'#B7BCB8':'#D3D6CE')+'" opacity="'+(.5+i*.055)+'"/>';
+    s+='<rect x="'+x+'" y="'+y+'" width="'+ww+'" height="2.5" fill="#FFF" opacity=".5"/>';}
+  s+='<rect x="'+(w/2-3)+'" y="'+cy+'" width="6" height="'+(cy*.7)+'" fill="#9DA49E" opacity=".55"/>';
+  return s;}
+function kCable(x1,y1,x2,y2,sag,c){return '<path d="M'+x1+','+y1+' Q'+((x1+x2)/2)+','+((y1+y2)/2+sag)+' '+x2+','+y2+'" fill="none" stroke="'+(c||'#241A10')+'" stroke-width="2.5" opacity=".85"/>';}
+function kStall(x,y,w,h,p,c){
+  return '<path d="M'+(x-8)+','+y+' L'+(x+w+8)+','+y+' L'+(x+w-3)+','+(y-16)+' L'+(x+3)+','+(y-16)+'Z" fill="'+(c||P.rust)+'"/>'+
+    '<path d="M'+(x-8)+','+y+' L'+(x+w+8)+','+y+' L'+(x+w+8)+','+(y+4)+' L'+(x-8)+','+(y+4)+'Z" fill="#000" opacity=".4"/>'+
+    '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+P.deep+'" opacity=".92"/>'+
+    '<rect x="'+(x+w*.15)+'" y="'+(y+h*.3)+'" width="'+(w*.7)+'" height="3" fill="'+P.sunB+'" opacity=".55"/>';}
+
+/* =================================================================
+   CHARACTERS — original wasteland designs, no likeness.
+   Hard forms: heavy brow, hooded eyes, sunken cheek, cut jaw.
+   Every head is one outer silhouette so the rim light rides the
+   true edge instead of floating over the hair.
+   ================================================================= */
+
+/* outer silhouettes, per headwear. [fillPath, rimArc] */
+function kOuter(kind){
+  switch(kind){
+    case 'long': return ['M-48,-4 C-54,-58 -28,-86 4,-86 C36,-86 56,-58 52,-6 C46,-38 30,-56 4,-56 C-20,-56 -38,-36 -48,-4Z'+
+                         ' M40,-70 C66,-72 78,-52 74,-30 C70,-12 56,-4 44,-8 C56,-22 58,-46 40,-58Z'+
+                         ' M46,-14 C62,4 64,34 56,58 L40,50 C48,30 48,8 40,-6Z'+
+                         ' M-46,-16 C-52,4 -52,26 -46,44 L-34,38 C-38,22 -38,4 -34,-10Z',
+                         'M-48,-4 C-54,-58 -28,-86 4,-86 C20,-86 33,-81 42,-72'];
+    case 'wrap': return ['M-48,2 C-52,-58 -26,-84 2,-84 C32,-84 54,-56 48,4 C44,-32 28,-52 2,-52 C-24,-52 -40,-32 -48,2Z M38,-20 C62,-8 62,30 48,60 L28,48 C40,26 40,2 30,-10Z',
+                         'M-48,2 C-52,-58 -26,-84 2,-84 C16,-84 28,-80 37,-72'];
+    case 'crop': return ['M-46,-4 C-46,-56 -24,-78 2,-78 C30,-78 48,-54 46,-2 C40,-38 26,-54 2,-54 C-22,-54 -38,-38 -46,-4Z',
+                         'M-46,-4 C-46,-56 -24,-78 2,-78 C14,-78 25,-74 33,-66'];
+    default:     return ['', 'M-42,-6 C-42,-54 -22,-76 2,-76 C14,-76 25,-72 33,-64'];
+  }
+}
+function kHead(p,o){
+  o=o||{};var hf=o.flip?-1:1,ex=o.expr||'neutral',rim=o.rim||P.warmRim;
+  var sk=o.hair||'', out=kOuter(sk);
+  var g='<g transform="scale('+hf+',1)">';
+
+  /* neck + trapezius, deep in shadow */
+  g+='<path d="M-17,50 L17,50 L23,98 L-23,98Z" fill="'+P.skinD+'"/>';
+  g+='<path d="M-17,50 L17,50 L18,68 C6,76 -6,76 -18,68Z" fill="'+P.skinDD+'"/>';
+
+  /* hair / wrap mass behind the face */
+  if(out[0])g+='<path d="'+out[0]+'" fill="'+(sk==='wrap'?(o.wrapC||'#8A7454'):(o.hairC||'#1B1209'))+'"/>';
+  if(out[0])g+='<path d="'+out[0]+'" fill="#000" opacity=".3" transform="translate(6,0)" clip-path="none"/>';
+
+  /* skull: narrow crown, wide cheekbone, cut jaw */
+  var SKULL='M-40,-14 C-40,-52 -22,-70 2,-70 C26,-70 42,-52 42,-14 C42,4 38,18 30,30 L14,54 C8,60 -4,60 -10,54 L-28,30 C-36,18 -40,4 -40,-14Z';
+  g+='<path d="'+SKULL+'" fill="url(#'+p+'skin)"/>';
+  /* core shadow — the whole right side falls off */
+  g+='<path d="M4,-70 C28,-68 42,-50 42,-14 C42,4 38,18 30,30 L14,54 C10,58 6,60 2,60Z" fill="'+P.skinD+'" opacity="'+(o.shade||.5)+'"/>';
+  g+='<path d="M18,-40 C34,-30 38,-4 32,24 L20,40 C30,10 30,-16 18,-34Z" fill="'+P.skinDD+'" opacity=".45"/>';
+  /* cheekbone hollow */
+  g+='<path d="M-34,-2 C-28,16 -18,32 -6,44 C-20,42 -32,26 -37,4Z" fill="'+P.skinD+'" opacity=".42"/>';
+  g+='<path d="M22,-2 C18,18 10,34 0,46 C14,42 26,26 31,2Z" fill="'+P.skinDD+'" opacity=".3"/>';
+  /* temple + forehead plane light */
+  g+='<path d="M-34,-44 C-24,-60 -6,-66 8,-62 C-6,-58 -20,-50 -28,-32Z" fill="'+P.skinL+'" opacity=".38"/>';
+
+  /* heavy brow ridge */
+  g+='<path d="M-40,-30 C-24,-42 20,-43 42,-30 L42,-15 C20,-28 -22,-27 -40,-16Z" fill="'+P.skinDD+'" opacity=".62"/>';
+  g+='<path d="M-38,-31 C-22,-43 20,-44 41,-31" fill="none" stroke="'+P.skinL+'" stroke-width="3" opacity=".3"/>';
+
+  /* hooded eyes — sockets, then a narrow sliver */
+  g+='<path d="M-36,-16 q17,-11 32,-3 q-15,15 -32,3Z" fill="'+P.skinDD+'" opacity=".7"/>';
+  g+='<path d="M6,-19 q17,-9 32,0 q-16,14 -32,-0Z" fill="'+P.skinDD+'" opacity=".7"/>';
+  var lid=ex==='shout'?-3:ex==='angry'?2:0;
+  g+='<path d="M-32,-10 q13,-'+(6-lid)+' 25,-1 q-13,7 -25,1Z" fill="#CFC2A6"/>';
+  g+='<path d="M9,-12 q13,-'+(5-lid)+' 25,0 q-14,7 -25,0Z" fill="#CFC2A6"/>';
+  g+='<circle cx="-20" cy="-10" r="4.4" fill="#1A1208"/><circle cx="22" cy="-11" r="4.4" fill="#1A1208"/>';
+  g+='<circle cx="-21.4" cy="-11.4" r="1.4" fill="#FFF" opacity=".85"/><circle cx="20.6" cy="-12.4" r="1.4" fill="#FFF" opacity=".85"/>';
+  /* upper lid weight */
+  g+='<path d="M-33,-11 q13,-8 26,-2" stroke="'+P.skinDD+'" stroke-width="5.5" fill="none" stroke-linecap="round"/>';
+  g+='<path d="M8,-13 q13,-7 27,-1" stroke="'+P.skinDD+'" stroke-width="5.5" fill="none" stroke-linecap="round"/>';
+  /* brows */
+  var bl=ex==='angry'?9:ex==='sad'?-7:ex==='shout'?11:2;
+  g+='<path d="M-38,-26 q14,-'+(4+bl)+' 27,-3" stroke="'+P.deep+'" stroke-width="6.5" fill="none" stroke-linecap="round"/>';
+  g+='<path d="M8,-29 q14,'+(-2+bl*-1)+' 29,3" stroke="'+P.deep+'" stroke-width="6.5" fill="none" stroke-linecap="round"/>';
+
+  /* nose — bridge highlight, hard shadow, nostril */
+  g+='<path d="M-2,-22 L-11,16 L4,20" fill="none" stroke="'+P.skinDD+'" stroke-width="4" stroke-linecap="round" opacity=".85"/>';
+  g+='<path d="M-3,-18 L-6,12" stroke="'+P.skinL+'" stroke-width="4" opacity=".5" stroke-linecap="round"/>';
+  g+='<ellipse cx="-9" cy="19" rx="3.4" ry="2.2" fill="'+P.deep+'" opacity=".6"/>';
+
+  /* mouth — thin, dry, downturned */
+  var m={neutral:'M-15,34 q15,3 29,-3',angry:'M-15,38 q15,-8 29,-4',sad:'M-15,40 q15,-9 29,-3',
+    det:'M-15,35 L14,32',smirk:'M-16,35 q17,8 29,-8',shout:'M-13,28 q14,24 26,-2 q-13,8 -26,2Z',
+    worried:'M-14,37 q14,-3 27,-2'}[ex]||'M-15,34 q15,3 29,-3';
+  g+='<path d="'+m+'" fill="'+(ex==='shout'?'#2E1008':'none')+'" stroke="'+P.deep+'" stroke-width="3.6" stroke-linecap="round"/>';
+  g+='<path d="M-13,29 q14,3 26,-3" stroke="'+P.skinL+'" stroke-width="2.4" fill="none" opacity=".3"/>';
+
+  /* beard — massed, with a lit edge, not a blob */
+  if(o.beard){
+    g+='<path d="M-38,-2 C-36,30 -22,54 2,58 C26,54 40,30 42,-2 C36,26 22,40 2,40 C-18,40 -32,26 -38,-2Z" fill="'+(o.beardC||'#241A10')+'"/>';
+    g+='<path d="M-30,16 C-26,40 -12,52 2,54 C16,52 30,40 34,16 C26,36 14,44 2,44 C-10,44 -22,36 -30,16Z" fill="#000" opacity=".3"/>';
+    g+='<path d="M-38,-2 C-36,26 -24,48 -6,56" fill="none" stroke="'+(o.beardC==='#C6BDA8'?'#F0E8D4':'#5E4A32')+'" stroke-width="3" opacity=".55"/>';
+  }
+  /* dirt + scar detail */
+  if(o.grime){
+    g+='<path d="M-30,6 q8,4 14,2 M-26,14 q10,3 16,0" stroke="'+P.skinDD+'" stroke-width="2" opacity=".35" fill="none"/>';
+    g+='<path d="M26,-38 L34,-16" stroke="'+P.skinDD+'" stroke-width="2.6" opacity=".55"/>';
+  }
+
+  /* gear over the face */
+  if(o.goggles){
+    g+='<path d="M-50,-20 L50,-20 L50,2 L-50,2Z" fill="'+P.clothD+'"/>';
+    g+='<path d="M-50,-20 L50,-20 L50,-14 L-50,-14Z" fill="#000" opacity=".35"/>';
+    g+='<circle cx="-21" cy="-9" r="20" fill="'+P.metalD+'"/><circle cx="23" cy="-9" r="20" fill="'+P.metalD+'"/>';
+    g+='<circle cx="-21" cy="-9" r="14.5" fill="url(#'+p+'glass)"/><circle cx="23" cy="-9" r="14.5" fill="url(#'+p+'glass)"/>';
+    g+='<path d="M-31,-18 q10,-7 20,-1" stroke="#FFF" stroke-width="3.6" fill="none" opacity=".8"/>';
+    g+='<path d="M13,-18 q10,-7 20,-1" stroke="#FFF" stroke-width="3.6" fill="none" opacity=".8"/>';
+    g+='<rect x="-4" y="-14" width="10" height="8" rx="2" fill="'+P.metalD+'"/>';
+    g+='<circle cx="-21" cy="-9" r="20" fill="none" stroke="'+rim+'" stroke-width="3" opacity=".6"/>';
+  }
+  if(o.mask){
+    g+='<path d="M-32,8 C-32,0 32,0 32,8 C34,36 21,56 0,56 C-21,56 -34,36 -32,8Z" fill="url(#'+p+'metal)"/>';
+    g+='<path d="M2,2 C28,2 33,6 32,8 C34,36 21,56 0,56Z" fill="#000" opacity=".3"/>';
+    g+='<circle cx="0" cy="34" r="13" fill="'+P.metalD+'"/><circle cx="0" cy="34" r="7.5" fill="'+P.deep+'"/>';
+    g+='<circle cx="0" cy="34" r="13" fill="none" stroke="'+P.metalL+'" stroke-width="2" opacity=".5"/>';
+    g+='<path d="M-27,16 L27,16 M-25,25 L25,25" stroke="'+P.metalD+'" stroke-width="2.6" opacity=".85"/>';
+    g+='<path d="M-32,6 L-48,-4 M32,6 L48,-4" stroke="'+P.clothD+'" stroke-width="7" stroke-linecap="round"/>';
+    g+='<path d="M-32,8 C-32,0 -14,-2 0,-2" fill="none" stroke="'+rim+'" stroke-width="3.4" opacity=".7"/>';
+  }
+  if(o.visor){
+    g+='<path d="M-46,-44 C-46,-72 46,-72 46,-42 L46,0 C46,22 -46,22 -46,-2Z" fill="url(#'+p+'metal)"/>';
+    g+='<path d="M0,-66 C30,-66 46,-60 46,-42 L46,0 C46,16 24,20 0,20Z" fill="#000" opacity=".26"/>';
+    g+='<path d="M-40,-24 L40,-24 L40,-2 Q0,11 -40,-2Z" fill="'+P.intDeep+'"/>';
+    g+='<path d="M-34,-15 L34,-15" stroke="'+P.red+'" stroke-width="4.5"/>';
+    g+='<path d="M-34,-15 L34,-15" stroke="'+P.red+'" stroke-width="12" opacity=".4" filter="url(#'+p+'b3)"/>';
+    g+='<path d="M-46,-44 C-46,-70 0,-72 0,-72" fill="none" stroke="#FFF" stroke-width="3.4" opacity=".5"/>';
+    g+='<path d="M-30,22 C-30,42 30,42 30,22 L33,48 L-33,48Z" fill="'+P.metalD+'"/>';
+  }
+
+  /* RIM — rides the true outer edge, lit side only, drawn last */
+  g+='<path d="'+out[1]+'" fill="none" stroke="'+rim+'" stroke-width="4.4" stroke-linecap="round" opacity=".9"/>';
+  g+='<path d="M-40,-8 C-39,10 -35,22 -28,32" fill="none" stroke="'+(o.rim2||P.coolRim)+'" stroke-width="3" stroke-linecap="round" opacity=".5"/>';
+  if(o.dust)g+='<path d="'+out[1]+'" fill="none" stroke="#FFE9C4" stroke-width="11" opacity=".13" filter="url(#'+p+'b3)"/>';
+  return g+'</g>';
+}
+
+function kTorso(p,o){o=o||{};var rim=o.rim||P.warmRim;
+  var g='<g>';
+  g+='<path d="M-90,196 C-90,122 -48,96 0,96 C48,96 90,122 90,196Z" fill="url(#'+p+'cloth)"/>';
+  g+='<path d="M10,96 C52,100 90,124 90,196 L24,196Z" fill="'+P.clothD+'" opacity=".55"/>';
+  g+='<path d="M-90,196 C-90,150 -74,124 -50,108 C-64,136 -70,166 -70,196Z" fill="#000" opacity=".18"/>';
+  if(o.plate){
+    g+='<path d="M-54,118 C-31,104 31,104 54,118 L45,172 C21,160 -21,160 -45,172Z" fill="url(#'+p+'metal)"/>';
+    g+='<path d="M-54,118 C-31,104 31,104 54,118 L52,129 C29,116 -29,116 -52,129Z" fill="'+P.metalL+'" opacity=".55"/>';
+    g+='<path d="M6,106 C31,108 46,113 54,118 L45,172 C33,166 20,162 8,161Z" fill="#000" opacity=".3"/>';
+    g+='<path d="M-31,122 L-27,166 M0,118 L0,162 M31,122 L27,166" stroke="'+P.metalD+'" stroke-width="3.2" opacity=".75"/>';
+    g+='<circle cx="-38" cy="132" r="3.4" fill="'+P.metalD+'"/><circle cx="38" cy="132" r="3.4" fill="'+P.metalD+'"/>';
+  }
+  if(o.strap){
+    g+='<path d="M-48,104 L36,196" stroke="'+P.rust+'" stroke-width="14"/>';
+    g+='<path d="M-48,104 L36,196" stroke="#000" stroke-width="4" opacity=".32"/>';
+    g+='<path d="M-52,104 L32,196" stroke="'+rim+'" stroke-width="2.6" opacity=".45"/>';
+    g+='<rect x="-15" y="134" width="24" height="19" rx="3" fill="url(#'+p+'metal)"/>';
+  }
+  if(o.pauldron){
+    g+='<path d="M-100,184 C-100,124 -76,100 -46,104 C-60,126 -67,154 -64,186Z" fill="url(#'+p+'metal)"/>';
+    g+='<path d="M-100,184 C-100,132 -80,110 -54,105" fill="none" stroke="'+rim+'" stroke-width="4.4" opacity=".85"/>';
+    g+='<path d="M-92,158 C-88,132 -76,116 -60,110" fill="none" stroke="'+P.metalD+'" stroke-width="3" opacity=".7"/>';
+  }
+  if(o.cloak)g+='<path d="M64,104 C108,122 118,170 110,196 L54,196 C64,166 68,132 64,104Z" fill="'+P.cloth2+'"/>'+
+    '<path d="M64,104 C96,118 108,152 106,180" fill="none" stroke="#000" stroke-width="3" opacity=".25"/>';
+  g+='<path d="M-90,196 C-90,124 -50,98 -4,96" fill="none" stroke="'+rim+'" stroke-width="4.4" opacity=".8"/>';
+  return g+'</g>';
+}
+function kFig(p,x,y,s,head,torso){return '<g transform="translate('+x+','+y+') scale('+s+')">'+kTorso(p,torso)+kHead(p,head)+'</g>';}
+
+var KC={
+  hunter:{head:{hair:'long',beard:1,hairC:'#17100A',beardC:'#241A10',dust:1,grime:1,shade:.52},
+          torso:{plate:1,strap:1,pauldron:1,cloak:1}},
+  carrier:{head:{hair:'wrap',goggles:1,wrapC:'#9A805E',shade:.4,rim:'#FFDCA8'},torso:{strap:1}},
+  broker:{head:{hair:'wrap',wrapC:'#5E5140',mask:1,shade:.5},torso:{cloak:1}},
+  trooper:{head:{visor:1},torso:{plate:1}},
+  giant:{head:{hair:'long',beard:1,hairC:'#C9C0AC',beardC:'#C6BDA8',shade:.56,rim:'#FFE0B0',grime:1},
+         torso:{plate:1,pauldron:1,cloak:1,strap:1}}
+};
+function kChar(p,who,x,y,s,expr,o){o=o||{};
+  var c=KC[who],h={},t={},k;
+  for(k in c.head)h[k]=c.head[k];
+  h.expr=expr||'neutral'; if(o.flip)h.flip=1; if(o.rim)h.rim=o.rim; if(o.shade)h.shade=o.shade;
+  for(k in c.torso)t[k]=c.torso[k]; if(o.rim)t.rim=o.rim;
+  return kFig(p,x,y,s,h,t);
+}
+
+/* towering figure for the entrance beat — reads by scale and edge alone */
+function kColossus(p,x,y,s,o){o=o||{};
+  var col=o.col||'#0A0603', rim=o.rim||P.warmRim;
+  var g='<g transform="translate('+x+','+y+') scale('+s+')">';
+  /* stance + coat */
+  g+='<path d="M-108,60 C-104,-6 -92,-52 -74,-86 L-40,-96 L40,-96 L74,-86 C92,-52 104,-6 108,60 '+
+     'L60,60 L48,-6 L30,60 L-30,60 L-48,-6 L-60,60Z" fill="'+col+'"/>';
+  /* coat flare */
+  g+='<path d="M-86,-70 C-116,-30 -126,16 -122,60 L-92,60 C-96,18 -92,-24 -74,-58Z" fill="'+col+'"/>';
+  g+='<path d="M86,-70 C116,-30 126,16 122,60 L92,60 C96,18 92,-24 74,-58Z" fill="'+col+'"/>';
+  /* torso mass + pauldrons */
+  g+='<path d="M-82,-88 C-82,-150 -48,-178 0,-178 C48,-178 82,-150 82,-88Z" fill="'+col+'"/>';
+  g+='<path d="M-118,-96 C-120,-146 -98,-172 -68,-170 C-84,-148 -92,-122 -90,-90Z" fill="'+col+'"/>';
+  g+='<path d="M118,-96 C120,-146 98,-172 68,-170 C84,-148 92,-122 90,-90Z" fill="'+col+'"/>';
+  /* neck + head — small against the body, which is what sells the scale */
+  g+='<path d="M-18,-176 L18,-176 L20,-200 L-20,-200Z" fill="'+col+'"/>';
+  g+='<path d="M-34,-226 C-34,-262 -18,-280 0,-280 C18,-280 34,-262 34,-226 C34,-206 26,-192 14,-186 L-14,-186 C-26,-192 -34,-206 -34,-226Z" fill="'+col+'"/>';
+  /* mane + beard as one mass */
+  g+='<path d="M-42,-224 C-46,-272 -22,-292 0,-292 C24,-292 46,-270 42,-222 C40,-196 34,-178 26,-166 L14,-172 C22,-188 26,-206 26,-224 C26,-250 16,-264 0,-264 C-16,-264 -26,-250 -26,-224 C-26,-206 -22,-188 -14,-172 L-26,-166 C-34,-178 -40,-198 -42,-224Z" fill="'+col+'"/>';
+  /* one unbroken lit edge, top of skull to boot */
+  g+='<path d="M-42,-224 C-46,-272 -22,-292 0,-292 C12,-292 24,-288 32,-278" fill="none" stroke="'+rim+'" stroke-width="5" stroke-linecap="round" opacity=".95"/>';
+  g+='<path d="M-40,-210 C-38,-190 -32,-176 -26,-166" fill="none" stroke="'+rim+'" stroke-width="4" stroke-linecap="round" opacity=".7"/>';
+  g+='<path d="M-118,-96 C-120,-146 -98,-172 -68,-170" fill="none" stroke="'+rim+'" stroke-width="5" stroke-linecap="round" opacity=".9"/>';
+  g+='<path d="M-82,-88 C-82,-150 -50,-176 -6,-178" fill="none" stroke="'+rim+'" stroke-width="4.4" opacity=".6"/>';
+  g+='<path d="M-86,-70 C-116,-30 -126,16 -122,60" fill="none" stroke="'+rim+'" stroke-width="5" stroke-linecap="round" opacity=".85"/>';
+  g+='<path d="M-108,60 C-104,-6 -92,-52 -74,-86" fill="none" stroke="'+rim+'" stroke-width="4" opacity=".5"/>';
+  return g+'</g>';
+}
+
+/* distant / reveal figures — silhouette only, one closed shape */
+function kSil(p,x,y,s,o){o=o||{};
+  var col=o.col||P.deep, rim=o.rim||P.warmRim;
+  var BODY='M-104,210 C-104,150 -86,118 -58,102 C-46,74 -44,50 -46,30 '+
+    'C-52,26 -56,10 -56,-8 C-56,-46 -34,-70 0,-70 C34,-70 56,-46 56,-8 '+
+    'C56,10 52,26 46,30 C44,50 46,74 58,102 C86,118 104,150 104,210Z';
+  var g='<g transform="translate('+x+','+y+') scale('+s+')">';
+  g+='<path d="'+BODY+'" fill="'+col+'"/>';
+  if(o.cloak)g+='<path d="M58,102 C104,124 122,168 116,210 L74,210 C82,170 76,130 58,110Z" fill="'+col+'"/>';
+  if(o.hair)g+='<path d="M-58,-6 C-62,-58 -34,-84 0,-84 C36,-84 62,-56 58,-4 C50,-40 32,-58 0,-58 C-32,-58 -50,-40 -58,-6Z" fill="'+col+'"/>';
+  /* one continuous lit edge down the left */
+  g+='<path d="M-58,-6 C-62,-58 -34,-84 0,-84 C14,-84 27,-80 37,-72" fill="none" stroke="'+rim+'" stroke-width="4.6" stroke-linecap="round" opacity=".9"/>';
+  g+='<path d="M-56,-4 C-56,14 -52,28 -46,32 C-44,52 -46,76 -58,104" fill="none" stroke="'+rim+'" stroke-width="4" stroke-linecap="round" opacity=".75"/>';
+  g+='<path d="M-58,104 C-86,120 -104,152 -104,210" fill="none" stroke="'+rim+'" stroke-width="4.6" stroke-linecap="round" opacity=".85"/>';
+  return g+'</g>';
+}
+function kStaff(x,y,h,ang){return '<g transform="translate('+x+','+y+') rotate('+(ang||0)+')">'+
+  '<rect x="-7" y="0" width="14" height="'+h+'" rx="6" fill="#4E3D2A"/>'+
+  '<rect x="-7" y="0" width="4.5" height="'+h+'" fill="#8A6E4E" opacity=".8"/>'+
+  '<rect x="3" y="0" width="4" height="'+h+'" fill="#000" opacity=".35"/>'+
+  '<path d="M-15,4 L15,4 L10,-28 L-10,-28Z" fill="#7A6A52"/>'+
+  '<circle cx="0" cy="-36" r="13" fill="#8E8677"/><circle cx="0" cy="-36" r="6" fill="#241A10"/>'+
+  '<path d="M-13,-40 A13,13 0 0,1 4,-48" fill="none" stroke="#FFD79A" stroke-width="3.4" opacity=".8"/></g>';}
+
+/* =================================================================
+   VEHICLES / PROPS — original scavenged designs
+   ================================================================= */
+function kBuggy(p,x,y,s){
+  return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+  '<ellipse cx="0" cy="66" rx="86" ry="15" fill="#000" opacity=".38"/>'+
+  '<circle cx="-58" cy="40" r="30" fill="'+P.deep+'"/><circle cx="-58" cy="40" r="15" fill="'+P.metalD+'"/><circle cx="-58" cy="40" r="6" fill="'+P.rust+'"/>'+
+  '<circle cx="58" cy="40" r="30" fill="'+P.deep+'"/><circle cx="58" cy="40" r="15" fill="'+P.metalD+'"/><circle cx="58" cy="40" r="6" fill="'+P.rust+'"/>'+
+  '<path d="M-74,20 L-52,-16 L52,-16 L74,20 L64,40 L-64,40Z" fill="url(#'+p+'rust)"/>'+
+  '<path d="M-52,-16 L52,-16 L46,-46 L-46,-46Z" fill="url(#'+p+'metal)"/>'+
+  '<path d="M-38,-42 L38,-42 L34,-20 L-34,-20Z" fill="url(#'+p+'glass)"/>'+
+  '<path d="M-38,-42 L-6,-42 L-16,-20 L-34,-20Z" fill="#CFEAF2" opacity=".35"/>'+
+  '<path d="M-84,16 L-74,16 L-74,32 L-84,32Z" fill="'+P.metalD+'"/><path d="M84,16 L74,16 L74,32 L84,32Z" fill="'+P.metalD+'"/>'+
+  '<path d="M-46,-46 L-40,-64 L40,-64 L46,-46Z" fill="'+P.metalD+'"/>'+
+  '<rect x="-30" y="-70" width="60" height="7" rx="3" fill="'+P.rust+'"/>'+
+  '<path d="M-74,20 L-52,-16 L52,-16 L74,20" fill="none" stroke="'+P.warmRim+'" stroke-width="4" opacity=".7"/>'+
+  '<circle cx="-40" cy="8" r="7" fill="'+P.teal+'"/><circle cx="-40" cy="8" r="14" fill="'+P.teal+'" opacity=".3" filter="url(#'+p+'b3)"/>'+
+  '<path d="M-64,40 L64,40 L58,52 L-58,52Z" fill="'+P.deep+'" opacity=".7"/>'+
+  '</g>';}
+function kArchive(p,x,y,s,st){
+  var lit=st==='dmg'?P.red:P.teal;
+  return '<g transform="translate('+x+','+y+') scale('+s+')">'+
+  '<ellipse cx="0" cy="52" rx="56" ry="11" fill="#000" opacity=".4"/>'+
+  '<path d="M-46,-30 L46,-30 L46,44 L-46,44Z" fill="url(#'+p+'metal)"/>'+
+  '<path d="M-46,-30 L0,-52 L46,-30" fill="'+P.metal+'"/>'+
+  '<path d="M0,-52 L46,-30 L46,44 L0,44Z" fill="#000" opacity=".24"/>'+
+  '<rect x="-34" y="-16" width="68" height="11" fill="'+P.metalD+'"/>'+
+  '<rect x="-34" y="-16" width="68" height="3" fill="'+P.metalL+'" opacity=".6"/>'+
+  '<circle cx="0" cy="16" r="17" fill="none" stroke="'+lit+'" stroke-width="5"/>'+
+  '<path d="M0,2 Q12,16 0,32 Q-12,16 0,2Z" fill="'+lit+'"/>'+
+  '<circle cx="0" cy="16" r="26" fill="'+lit+'" opacity=".22" filter="url(#'+p+'b6)"/>'+
+  '<path d="M-46,-30 L0,-52 L46,-30" fill="none" stroke="'+P.warmRim+'" stroke-width="3.5" opacity=".7"/>'+
+  '<path d="M-40,36 L40,36" stroke="'+P.rust+'" stroke-width="7"/>'+
+  '</g>';}
+function kWreck(p,x,y,s,r){return '<g transform="translate('+x+','+y+') rotate('+(r||0)+') scale('+s+')">'+
+  '<path d="M-60,20 L-44,-14 L44,-14 L60,20Z" fill="'+P.mid+'"/>'+
+  '<path d="M-40,-14 L-30,-38 L30,-38 L40,-14Z" fill="'+P.near+'"/>'+
+  '<circle cx="-38" cy="26" r="17" fill="'+P.deep+'"/><circle cx="38" cy="26" r="17" fill="'+P.deep+'"/>'+
+  '<path d="M-60,20 L-44,-14 L44,-14" fill="none" stroke="'+P.warmRim+'" stroke-width="3" opacity=".45"/></g>';}
+
 var K_OBS={
-  wreck:'<svg viewBox="0 0 100 100"><g stroke="'+INK+'" stroke-width="4"><path d="M10,74 L18,44 L82,44 L90,74 Z" fill="#6A5238"/><rect x="26" y="28" width="48" height="18" fill="#3A3026"/><circle cx="28" cy="78" r="11" fill="#2A2118"/><circle cx="72" cy="78" r="11" fill="#2A2118"/></g></svg>',
-  slab:'<svg viewBox="0 0 100 100"><g stroke="'+INK+'" stroke-width="4"><path d="M8,84 L20,34 L80,34 L92,84 Z" fill="#B8B0A4"/><path d="M30,34 L36,84 M64,34 L70,84" stroke="'+INK+'" stroke-width="3"/></g></svg>',
-  pit:'<svg viewBox="0 0 100 100"><ellipse cx="50" cy="72" rx="46" ry="17" fill="#241C12" stroke="'+INK+'" stroke-width="4"/><ellipse cx="46" cy="70" rx="22" ry="7" fill="#0F0B06"/></svg>',
-  raider:'<svg viewBox="0 0 100 100"><g stroke="'+INK+'" stroke-width="4"><circle cx="50" cy="30" r="17" fill="#9A7448"/><path d="M33,26 L67,26 L67,36 Q50,42 33,36Z" fill="#23232A"/><path d="M22,92 L28,50 Q50,42 72,50 L78,92Z" fill="#7A4A28"/></g></svg>'
+  wreck:'<svg viewBox="0 0 120 120"><defs>'+lgr('ow1',0,0,.7,1,[[0,'#B96A33'],[1,'#4E2814']])+lgr('ow2',0,0,1,1,[[0,'#D6CFBE'],[.4,'#8E8677'],[1,'#4A453C']])+'</defs>'+
+    '<ellipse cx="60" cy="100" rx="46" ry="10" fill="#000" opacity=".35"/>'+
+    '<path d="M14,86 L26,44 L94,44 L106,86Z" fill="url(#ow1)"/>'+
+    '<path d="M30,44 L38,16 L82,16 L90,44Z" fill="url(#ow2)"/>'+
+    '<path d="M42,22 L78,22 L74,40 L46,40Z" fill="#1B2E36"/>'+
+    '<circle cx="32" cy="92" r="15" fill="#1B1109"/><circle cx="88" cy="92" r="15" fill="#1B1109"/>'+
+    '<circle cx="32" cy="92" r="6" fill="#4A453C"/><circle cx="88" cy="92" r="6" fill="#4A453C"/>'+
+    '<path d="M14,86 L26,44 L94,44" fill="none" stroke="#FFD79A" stroke-width="4" opacity=".65"/></svg>',
+  slab:'<svg viewBox="0 0 120 120"><defs>'+lgr('os1',0,0,0,1,[[0,'#B7B0A0'],[1,'#57503F']])+'</defs>'+
+    '<ellipse cx="60" cy="102" rx="42" ry="9" fill="#000" opacity=".35"/>'+
+    '<path d="M18,98 L30,20 L92,20 L104,98Z" fill="url(#os1)"/>'+
+    '<path d="M44,20 L50,98 M76,20 L82,98" stroke="#3A3126" stroke-width="4" opacity=".55"/>'+
+    '<path d="M30,20 L92,20" stroke="#E6DCC4" stroke-width="5" opacity=".6"/>'+
+    '<path d="M18,98 L30,20" fill="none" stroke="#FFD79A" stroke-width="4" opacity=".55"/></svg>',
+  pit:'<svg viewBox="0 0 120 120"><defs>'+rgr('op1',60,86,50,[[0,'#0B0703'],[.6,'#241708'],[1,'#4E3720']])+'</defs>'+
+    '<ellipse cx="60" cy="86" rx="54" ry="22" fill="url(#op1)"/>'+
+    '<ellipse cx="60" cy="80" rx="54" ry="20" fill="#0B0703"/>'+
+    '<path d="M8,82 Q60,58 112,82" fill="none" stroke="#D9B87E" stroke-width="5" opacity=".7"/></svg>',
+  raider:'<svg viewBox="0 0 120 120"><defs>'+lgr('or1',.2,0,.9,1,[[0,'#E3B57E'],[.45,'#C08A52'],[1,'#6E4526']])+
+    lgr('or2',.2,0,.9,1,[[0,'#7A6A52'],[1,'#3A3126']])+'</defs>'+
+    '<ellipse cx="60" cy="112" rx="34" ry="7" fill="#000" opacity=".35"/>'+
+    '<path d="M22,110 C22,72 38,58 60,58 C82,58 98,72 98,110Z" fill="url(#or2)"/>'+
+    '<path d="M36,54 C36,32 44,20 60,20 C76,20 84,32 84,54 C84,68 74,78 60,78 C46,78 36,68 36,54Z" fill="url(#or1)"/>'+
+    '<path d="M34,44 L86,44 L86,58 L34,58Z" fill="#3A3126"/>'+
+    '<circle cx="48" cy="51" r="10" fill="#1B2E36"/><circle cx="72" cy="51" r="10" fill="#1B2E36"/>'+
+    '<circle cx="48" cy="51" r="7" fill="#4E7E8C"/><circle cx="72" cy="51" r="7" fill="#4E7E8C"/>'+
+    '<path d="M46,66 C52,74 68,74 74,66" stroke="#8E8677" stroke-width="5" fill="none"/>'+
+    '<path d="M36,54 C36,32 44,20 60,20" fill="none" stroke="#FFD79A" stroke-width="4" opacity=".8"/>'+
+    '<path d="M22,110 C22,74 38,58 58,58" fill="none" stroke="#FFD79A" stroke-width="4" opacity=".6"/></svg>'
 };
-var K_SKY='#D9B87E', K_DARK='#241C12', K_MID='#4A3A28', K_DUST='#C4A374';
+
+/* =================================================================
+   SCENES
+   ================================================================= */
 var K_SC={
-  descent:vb(300,520,rect(0,0,300,520,K_SKY)+sun(232,66,30)+'<g transform="translate(0,-6)">'+complexTower()+'</g>'+
-    rect(0,150,300,370,'#3A2E20')+
-    ruinBlock(-10,180,120,120,K_MID)+ruinBlock(120,210,90,90,'#3A3026')+ruinBlock(210,170,110,130,K_MID)+
-    rect(0,300,300,220,K_DARK)+
-    stall(24,340,64,44,'#5A4A38')+stall(112,352,72,32,'#6A5238')+stall(206,336,70,48,'#5A4A38')+
-    '<path d="M0,392 L300,392" stroke="'+INK+'" stroke-width="5"/>'+
-    rig(212,452,.62,{lit:1})+fig(K_CH.hunter,'smirk',18,336,.72)),
-  market:vb(300,300,rect(0,0,300,300,'#2A2118')+rect(0,0,300,120,'#3A3026')+
-    stall(-12,120,90,60,'#5A4A38')+stall(214,132,98,48,'#6A5238')+
-    '<path d="M0,180 L300,180" stroke="'+INK+'" stroke-width="5"/>'+rect(0,180,300,120,K_DARK)+
-    fig(K_CH.broker,'neutral',6,26,1.16)),
-  holo:vb(300,300,rect(0,0,300,300,'#241C12')+rect(0,0,300,300,'#2A2118')+
-    scanline(60)+scanline(96)+scanline(238)+
-    '<ellipse cx="150" cy="252" rx="86" ry="14" fill="#4A7A7E" opacity=".35"/>'+
-    holoBox(150,150,1.34)+
-    '<path d="M64,252 L236,252" stroke="#4A7A7E" stroke-width="3" opacity=".7"/>'),
-  hunterC:vb(300,300,rect(0,0,300,300,'#3A2E20')+fig(K_CH.hunterC,'smirk',10,-8,1.42)),
-  hunterDet:vb(300,300,rect(0,0,300,300,'#3A2E20')+fig(K_CH.hunterC,'det',10,-8,1.42)),
-  hunterAng:vb(300,300,rect(0,0,300,300,'#4A2A1E')+fig(K_CH.hunterC,'angry',10,-8,1.42)),
-  contract:vb(300,300,rect(0,0,300,300,'#2A2118')+scanline(40)+scanline(72)+
-    '<rect x="46" y="70" width="208" height="150" rx="6" fill="#1A140D" stroke="#4A7A7E" stroke-width="4"/>'+
-    '<rect x="66" y="94" width="120" height="9" fill="#4A7A7E" opacity=".8"/><rect x="66" y="114" width="168" height="7" fill="#4A7A7E" opacity=".5"/>'+
-    '<rect x="66" y="130" width="140" height="7" fill="#4A7A7E" opacity=".5"/>'+
-    '<rect x="66" y="164" width="168" height="34" fill="#C8873A" stroke="'+INK+'" stroke-width="3"/>'+
-    '<path d="M96,181 L204,181" stroke="'+INK+'" stroke-width="5"/>'),
-  highway:vb(300,300,rect(0,0,300,300,K_SKY)+sun(58,52,26)+dune(150,'#B08A56')+dune(178,'#8A6A40')+
-    '<path d="M0,300 L108,124 L192,124 L300,300Z" fill="#5A4A38"/>'+
-    '<path d="M150,124 L150,300" stroke="#D9C8A4" stroke-width="3" stroke-dasharray="10 16"/>'+
-    ruinBlock(-16,96,60,60,'#3A3026')+ruinBlock(258,84,70,74,'#3A3026')+
-    rig(150,214,.8,{lit:1})),
-  overlook:vb(300,520,rect(0,0,300,520,K_SKY)+sun(238,58,26)+dune(190,'#B08A56')+rect(0,238,300,282,'#6A5238')+
-    ruinBlock(4,250,86,64,K_MID)+ruinBlock(112,264,76,50,'#3A3026')+ruinBlock(208,244,92,70,K_MID)+
-    '<path d="M0,318 L300,318" stroke="'+INK+'" stroke-width="4" opacity=".35"/>'+
-    fig(K_CH.trooper,'neutral',6,296,.62)+fig(K_CH.trooper,'neutral',206,306,.58)+
-    fig(K_CH.carrier,'worried',96,352,.72)+holoBox(150,470,.5)),
-  roofs:vb(300,300,rect(0,0,300,300,K_SKY)+sun(46,40,20)+dune(104,'#C4A374')+
-    ruinBlock(-20,120,110,180,K_MID)+ruinBlock(96,150,84,150,'#5A4A38')+ruinBlock(190,110,130,190,K_MID)+
-    '<path d="M0,150 L300,150" stroke="'+INK+'" stroke-width="4" opacity=".4"/>'+
-    '<rect x="98" y="128" width="86" height="16" fill="#8A5A32" stroke="'+INK+'" stroke-width="3"/>'),
-  shaft:vb(300,520,rect(0,0,300,520,'#241C12')+
-    ruinBlock(-10,-10,86,540,'#3A3026')+ruinBlock(224,-10,86,540,'#3A3026')+
-    '<rect x="76" y="120" width="148" height="20" fill="#6A5238" stroke="'+INK+'" stroke-width="4"/>'+
-    '<rect x="76" y="248" width="148" height="20" fill="#6A5238" stroke="'+INK+'" stroke-width="4"/>'+
-    '<rect x="76" y="376" width="148" height="20" fill="#5A4A38" stroke="'+INK+'" stroke-width="4"/>'+
-    '<path d="M150,-10 L150,520" stroke="#C4A374" stroke-width="2" stroke-dasharray="6 16" opacity=".5"/>'+
-    '<path d="M76,396 L224,412" stroke="'+INK+'" stroke-width="5"/>'),
-  chamber:vb(300,300,rect(0,0,300,300,'#2A2118')+
-    ruinBlock(-10,-10,100,320,'#3A3026')+ruinBlock(214,-10,100,320,'#3A3026')+
-    '<path d="M90,300 L90,110 Q150,74 210,110 L210,300" fill="#1A140D" stroke="'+INK+'" stroke-width="4"/>'+
-    '<g transform="translate(150,150)">'+figure(K_CH.carrier,'worried',{sw:3})+'</g>'+
-    '<path d="M118,214 L182,214" stroke="#8A5A32" stroke-width="7"/>'+holoBox(150,254,.5)),
-  carrierC:vb(300,300,rect(0,0,300,300,'#2A2118')+fig(K_CH.carrier,'worried',12,-4,1.36)),
-  giantEnter:vb(300,520,rect(0,0,300,520,'#3A2E20')+
-    '<ellipse cx="150" cy="470" rx="150" ry="40" fill="#C4A374" opacity=".5"/>'+
-    ruinBlock(-16,-10,70,520,'#241C12')+ruinBlock(246,-10,70,520,'#241C12')+
-    '<g transform="translate(150,150) scale(1.5)">'+figure(K_CH.giant,'det',{sw:4})+'</g>'+
-    '<rect x="252" y="60" width="14" height="440" rx="6" fill="#6A5238" stroke="'+INK+'" stroke-width="4"/>')
+
+ descent:KSVG(300,520,function(p,w,h){
+  return kDefs(p,{sx:250,sy:70})+kSky(p,w,h)+kSun(p,w,h,250,64,20)+
+   '<g opacity=".75">'+kComplex(p,300,132)+'</g>'+
+   kHaze(96,w,52,'#E8C89A',.42)+
+   /* vast supporting structure */
+   kSlab(-20,120,110,180,'#6E5C46',p)+kSlab(210,140,120,160,'#5E4E3A',p)+
+   kWindows(-20,120,110,180,4,7,'#2A1C10')+kWindows(210,140,120,160,4,6,'#2A1C10')+
+   kSlab(80,168,140,132,'#7A6650',p,1)+kWindows(80,168,140,132,5,5,'#2A1C10')+
+   kHaze(160,w,44,'#D9B87E',.3)+
+   /* market floor in shadow */
+   '<rect x="0" y="286" width="'+w+'" height="'+(h-286)+'" fill="#2A1B0E"/>'+
+   '<ellipse cx="150" cy="410" rx="180" ry="120" fill="#B87F42" opacity=".35" filter="url(#'+p+'b14)"/>'+
+   '<rect x="0" y="286" width="'+w+'" height="'+(h-286)+'" fill="url(#'+p+'pool)" opacity=".7"/>'+
+   kCable(-10,300,150,318,20)+kCable(150,318,320,296,18)+kCable(-10,336,320,352,26,'#1B1109')+
+   kStall(14,368,70,52,p)+kStall(112,384,76,40,p,'#7A5A32')+kStall(214,362,74,58,p)+
+   kRay(p,120,286,26,70,200,.5)+kRay(p,236,286,16,46,190,.35)+
+   /* foreground crowd silhouettes */
+   kSil(p,26,520,.44,{col:'#0C0703',rim:'#C98A4E'})+
+   kSil(p,278,514,.48,{col:'#0C0703',rim:'#C98A4E',cloak:1})+
+   '<ellipse cx="150" cy="416" rx="86" ry="66" fill="#D9A05E" opacity=".3" filter="url(#'+p+'b14)"/>'+
+   kChar(p,'hunter',150,404,.66,'smirk',{shade:.42})+
+   kMotes(p,26,w,h,7)+kGrade(p,w,h);
+ }),
+
+ market:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:280,sy:20})+
+   '<rect width="'+w+'" height="'+h+'" fill="'+P.intDeep+'"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".75"/>'+
+   kSlab(-16,-10,90,180,'#4A3B2A',p)+kSlab(230,-10,90,160,'#3E3224',p)+
+   kCable(-10,44,310,62,22)+kCable(-10,78,310,64,16,'#1B1109')+
+   kStall(6,150,80,60,p)+kStall(214,142,86,68,p,'#7A5A32')+
+   '<rect x="0" y="206" width="'+w+'" height="94" fill="'+P.deep+'"/>'+
+   kRay(p,64,-10,20,52,190,.3)+
+   kChar(p,'broker',150,120,.86,'neutral',{})+
+   '<path d="M-10,300 L60,244 L120,300Z" fill="'+P.deep+'"/>'+
+   kMotes(p,16,w,h,3)+kGrade(p,w,h);
+ }),
+
+ holo:KSVG(300,300,function(p,w,h){
+  return kDefs(p)+
+   '<rect width="'+w+'" height="'+h+'" fill="'+P.intDeep+'"/>'+
+   '<ellipse cx="150" cy="262" rx="118" ry="26" fill="'+P.teal+'" opacity=".2" filter="url(#'+p+'b14)"/>'+
+   '<path d="M60,300 L96,196 L204,196 L240,300Z" fill="'+P.teal+'" opacity=".13"/>'+
+   kSlab(-14,-10,74,300,'#2C2419',p)+kSlab(240,-10,74,300,'#2C2419',p)+
+   '<rect x="96" y="252" width="108" height="14" fill="'+P.metalD+'"/>'+
+   kArchive(p,150,164,1.5)+
+   '<g stroke="'+P.teal+'" stroke-width="2" opacity=".5">'+
+   '<path d="M40,74 L260,74" stroke-dasharray="9 12"/><path d="M40,110 L260,110" stroke-dasharray="5 16"/>'+
+   '<path d="M40,232 L260,232" stroke-dasharray="12 9"/></g>'+
+   '<rect x="40" y="46" width="70" height="4" fill="'+P.teal+'" opacity=".8"/>'+
+   '<rect x="40" y="56" width="42" height="3" fill="'+P.teal+'" opacity=".5"/>'+
+   kMotes(p,22,w,h,11)+kGrade(p,w,h);
+ }),
+
+ hunterC:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:296,sy:40})+
+   '<rect width="'+w+'" height="'+h+'" fill="#4A3626"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".55"/>'+
+   kSlab(200,-10,120,300,'#33261A',p)+kRay(p,250,-10,20,70,300,.28)+
+   kChar(p,'hunter',132,120,1.42,'smirk',{})+
+   kMotes(p,18,w,h,5)+kGrade(p,w,h);
+ }),
+ hunterDet:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:296,sy:40})+
+   '<rect width="'+w+'" height="'+h+'" fill="#42311F"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".45"/>'+
+   kSlab(-20,-10,110,300,'#2E2317',p)+
+   kChar(p,'hunter',150,120,1.42,'det',{})+
+   kMotes(p,14,w,h,9)+kGrade(p,w,h);
+ }),
+ hunterAng:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:10,sy:40})+
+   '<rect width="'+w+'" height="'+h+'" fill="#4E2A1C"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".5"/>'+
+   kChar(p,'hunter',150,118,1.5,'angry',{rim:'#FFB27A'})+
+   kMotes(p,14,w,h,13)+kGrade(p,w,h);
+ }),
+
+ contract:KSVG(300,300,function(p,w,h){
+  return kDefs(p)+
+   '<rect width="'+w+'" height="'+h+'" fill="'+P.intDeep+'"/>'+
+   '<rect x="34" y="52" width="232" height="196" rx="7" fill="#0E1A1E"/>'+
+   '<rect x="34" y="52" width="232" height="196" rx="7" fill="none" stroke="'+P.teal+'" stroke-width="4"/>'+
+   '<rect x="34" y="52" width="232" height="196" rx="7" fill="'+P.teal+'" opacity=".08"/>'+
+   '<rect x="56" y="76" width="130" height="10" fill="'+P.teal+'" opacity=".85"/>'+
+   '<rect x="56" y="98" width="188" height="6" fill="'+P.teal+'" opacity=".45"/>'+
+   '<rect x="56" y="112" width="152" height="6" fill="'+P.teal+'" opacity=".45"/>'+
+   '<rect x="56" y="126" width="176" height="6" fill="'+P.teal+'" opacity=".3"/>'+
+   '<rect x="56" y="160" width="188" height="46" rx="4" fill="'+P.sunB+'"/>'+
+   '<rect x="56" y="160" width="188" height="10" rx="4" fill="#FFF" opacity=".4"/>'+
+   '<path d="M92,184 L208,184" stroke="'+P.deep+'" stroke-width="7"/>'+
+   '<rect x="34" y="52" width="232" height="196" rx="7" fill="none" stroke="'+P.teal+'" stroke-width="14" opacity=".18" filter="url(#'+p+'b6)"/>'+
+   /* hand reaching in */
+   '<path d="M112,300 C112,258 128,240 150,240 C176,240 190,258 190,300Z" fill="url(#'+p+'skin)"/>'+
+   '<path d="M112,300 C112,262 126,242 148,240" fill="none" stroke="'+P.teal+'" stroke-width="4" opacity=".6"/>'+
+   kMotes(p,12,w,h,17)+kGrade(p,w,h);
+ }),
+
+ highway:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:56,sy:56})+kSky(p,w,h)+kSun(p,w,h,56,52,22)+
+   kDunes(p,138,w,h)+kHaze(126,w,26,'#F0D5A4',.5)+
+   /* broken elevated road */
+   '<path d="M0,300 L104,120 L196,120 L300,300Z" fill="'+P.mid+'"/>'+
+   '<path d="M0,300 L104,120 L128,120 L44,300Z" fill="#000" opacity=".18"/>'+
+   '<path d="M150,120 L150,300" stroke="#E4CFA4" stroke-width="4" stroke-dasharray="12 18" opacity=".8"/>'+
+   '<path d="M104,120 L196,120" stroke="'+P.deep+'" stroke-width="5"/>'+
+   kSlab(-24,68,66,64,'#6E5C46',p,1)+kSlab(262,54,70,78,'#5E4E3A',p,1)+
+   kWreck(p,44,206,.72,-8)+kWreck(p,262,238,.8,6)+
+   kBuggy(p,150,214,.94)+
+   '<path d="M-10,300 L40,258 L96,300Z" fill="'+P.deep+'" opacity=".9"/>'+
+   kMotes(p,20,w,h,23)+kGrade(p,w,h);
+ }),
+
+ overlook:KSVG(300,520,function(p,w,h){
+  return kDefs(p,{sx:244,sy:64})+kSky(p,w,h)+kSun(p,w,h,244,60,22)+
+   kDunes(p,208,w,h)+kHaze(196,w,28,'#F0D5A4',.45)+
+   /* smoke columns */
+   '<path d="M78,300 C70,250 84,216 76,186" stroke="#3A3126" stroke-width="24" opacity=".35" filter="url(#'+p+'b6)" fill="none"/>'+
+   '<path d="M214,306 C222,258 206,224 214,196" stroke="#3A3126" stroke-width="18" opacity=".3" filter="url(#'+p+'b6)" fill="none"/>'+
+   /* settlement */
+   kSlab(2,262,92,74,'#6E5C46',p,1)+kSlab(114,276,80,60,'#5E4E3A',p)+kSlab(212,256,92,80,'#6E5C46',p,1)+
+   kWindows(2,262,92,74,3,3)+kWindows(212,256,92,80,3,3)+
+   '<rect x="0" y="330" width="'+w+'" height="190" fill="url(#'+p+'gnd)"/>'+
+   '<rect x="0" y="330" width="'+w+'" height="190" fill="#000" opacity=".28"/>'+
+   kSil(p,44,388,.30,{col:'#1C1408',rim:'#FFC98A'})+
+   kSil(p,252,396,.28,{col:'#1C1408',rim:'#FFC98A'})+
+   kSil(p,150,432,.34,{col:'#241A0C',rim:'#FFDCA8',hair:1})+
+   kArchive(p,196,472,.36)+
+   /* foreground rock occluder */
+   '<path d="M-20,520 L-20,430 Q40,404 96,452 L120,520Z" fill="'+P.deep+'"/>'+
+   '<path d="M-20,430 Q40,404 96,452" fill="none" stroke="'+P.warmRim+'" stroke-width="4" opacity=".55"/>'+
+   kMotes(p,24,w,h,31)+kGrade(p,w,h);
+ }),
+
+ roofs:KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:40,sy:34})+kSky(p,w,h)+kSun(p,w,h,40,32,18)+
+   kDunes(p,104,w,h)+kHaze(94,w,20,'#F0D5A4',.4)+
+   kSlab(-24,124,120,180,'#7A6650',p,1)+kWindows(-24,124,120,180,3,5)+
+   kSlab(100,152,84,150,'#5E4E3A',p)+kWindows(100,152,84,150,2,4)+
+   kSlab(190,110,134,192,'#6E5C46',p,1)+kWindows(190,110,134,192,4,6)+
+   '<rect x="98" y="128" width="90" height="18" rx="3" fill="'+P.rust+'"/>'+
+   '<rect x="98" y="128" width="90" height="5" rx="2" fill="'+P.metalL+'" opacity=".4"/>'+
+   kCable(-10,168,310,150,18)+
+   '<path d="M-10,300 L54,246 L112,300Z" fill="'+P.deep+'"/>'+
+   '<path d="M-10,246 L54,246" fill="none" stroke="'+P.warmRim+'" stroke-width="4" opacity=".5"/>'+
+   kMotes(p,18,w,h,41)+kGrade(p,w,h);
+ }),
+
+ shaft:KSVG(300,520,function(p,w,h){
+  return kDefs(p)+
+   '<rect width="'+w+'" height="'+h+'" fill="#1E2830"/>'+
+   kSlab(-14,-10,96,540,'#3A2E20',p)+kSlab(218,-10,96,540,'#33281B',p)+
+   kWindows(-14,40,96,460,2,10,'#120B05')+kWindows(218,20,96,480,2,10,'#120B05')+
+   '<rect x="96" y="-10" width="108" height="46" fill="#CFE6F0" opacity=".72"/>'+
+   '<rect x="96" y="-10" width="108" height="46" fill="#FFF" opacity=".35" filter="url(#'+p+'b6)"/>'+
+   kRay(p,150,34,36,86,430,.3)+kRay(p,118,34,11,32,400,.18)+
+   '<rect x="82" y="132" width="136" height="22" fill="'+P.metal+'"/><rect x="82" y="132" width="136" height="5" fill="'+P.metalL+'" opacity=".5"/>'+
+   '<rect x="82" y="270" width="136" height="22" fill="'+P.metal+'"/><rect x="82" y="270" width="136" height="5" fill="'+P.metalL+'" opacity=".5"/>'+
+   '<rect x="82" y="400" width="136" height="22" fill="'+P.mid+'"/><rect x="82" y="400" width="136" height="5" fill="'+P.metalL+'" opacity=".4"/>'+
+   '<path d="M82,422 L218,442" stroke="'+P.deep+'" stroke-width="7"/>'+
+   '<path d="M96,422 L104,470 M186,424 L178,470" stroke="'+P.metalD+'" stroke-width="5"/>'+
+   kCable(82,190,218,214,26)+kCable(82,330,218,308,20,'#1B1109')+
+   kMotes(p,34,w,h,53)+kGrade(p,w,h);
+ }),
+
+ chamber:KSVG(300,300,function(p,w,h){
+  return kDefs(p)+
+   '<rect width="'+w+'" height="'+h+'" fill="'+P.intDeep+'"/>'+
+   kSlab(-14,-10,104,320,'#2E2419',p)+kSlab(226,-10,104,320,'#2E2419',p)+
+   '<path d="M90,300 L90,104 Q150,64 210,104 L210,300Z" fill="#8FB6CC" opacity=".22"/>'+
+   '<path d="M90,300 L90,104 Q150,64 210,104 L210,300Z" fill="none" stroke="'+P.metalD+'" stroke-width="5"/>'+
+   kRay(p,150,80,30,74,230,.4)+
+   kChar(p,'carrier',150,120,.92,'worried',{rim:'#CFEAF2'})+
+   '<path d="M112,224 L188,232" stroke="'+P.rust+'" stroke-width="9"/>'+
+   kArchive(p,150,240,.58)+
+   '<path d="M-10,300 L44,252 L104,300Z" fill="'+P.deep+'"/>'+
+   kMotes(p,20,w,h,61)+kGrade(p,w,h);
+ }),
+
+ carrierC:KSVG(300,300,function(p,w,h){
+  return kDefs(p)+
+   '<rect width="'+w+'" height="'+h+'" fill="#33281B"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".45"/>'+
+   kSlab(216,-10,110,300,'#241C13',p)+kRay(p,250,-10,18,60,300,.3)+
+   kChar(p,'carrier',140,118,1.4,'worried',{})+
+   kMotes(p,16,w,h,71)+kGrade(p,w,h);
+ }),
+
+ giantEnter:KSVG(300,520,function(p,w,h){
+  return kDefs(p,{sx:150,sy:40})+
+   '<rect width="'+w+'" height="'+h+'" fill="#4A3722"/>'+
+   '<rect width="'+w+'" height="'+h+'" fill="url(#'+p+'pool)" opacity=".45"/>'+
+   kSlab(-20,-10,66,540,'#20160C',p)+kSlab(254,-10,66,540,'#20160C',p)+
+   /* blown dust from the impact */
+   '<ellipse cx="150" cy="482" rx="200" ry="62" fill="#E0C089" opacity=".5" filter="url(#'+p+'b14)"/>'+
+   '<ellipse cx="150" cy="452" rx="132" ry="36" fill="#F0DCB4" opacity=".34" filter="url(#'+p+'b6)"/>'+
+   '<ellipse cx="150" cy="352" rx="150" ry="80" fill="#C9A472" opacity=".16" filter="url(#'+p+'b14)"/>'+
+   kRay(p,150,-10,34,96,300,.34)+
+   kStaff(256,150,372,4)+
+   kColossus(p,148,452,1.02,{rim:'#FFD79A'})+
+   '<rect x="0" y="470" width="'+w+'" height="50" fill="#2E2013"/>'+
+   '<ellipse cx="150" cy="486" rx="170" ry="26" fill="#C99A5A" opacity=".3" filter="url(#'+p+'b6)"/>'+
+   '<path d="M-10,520 L46,468 L110,520Z" fill="'+P.deep+'"/>'+
+   kMotes(p,30,w,h,83)+kGrade(p,w,h);
+ })
 };
+
+function kKey(){return KSVG(300,120,function(p,w,h){
+  return kDefs(p,{sx:236,sy:34})+kSky(p,w,h)+kSun(p,w,h,236,32,15)+
+   '<g opacity=".5" transform="translate(0,-52) scale(1,.62)">'+kComplex(p,300,120)+'</g>'+
+   kDunes(p,60,w,h)+kHaze(52,w,16,'#F0D5A4',.45)+
+   kSlab(6,42,42,44,'#6E5C46',p)+kSlab(246,34,54,52,'#5E4E3A',p)+
+   kWreck(p,272,96,.5,7)+
+   kBuggy(p,132,92,.44)+
+   '<path d="M-6,120 L26,98 L58,120Z" fill="'+P.deep+'"/>'+
+   kGrade(p,w,h);
+ });}
+function kRunBg(){return KSVG(300,300,function(p,w,h){
+  return kDefs(p,{sx:250,sy:44})+kSky(p,w,h)+kSun(p,w,h,250,42,20)+
+   kDunes(p,116,w,h)+kHaze(104,w,24,'#F0D5A4',.5)+
+   kSlab(-22,58,58,62,'#6E5C46',p,1)+kSlab(264,44,62,76,'#5E4E3A',p,1)+
+   kMotes(p,16,w,h,97);
+ });}
 
 /* =================================================================
    STORY DEFINITIONS
@@ -643,13 +1168,10 @@ var STORIES=[
  id:'last-drop', title:'The Last Drop', sub:'Project K · Side Quest',
  badge:'Action · 8–10 min', dur:'Sequences 1–3 of 12 · ~4 min',
  blurb:'A bounty hunter takes a job to retrieve a sealed container from beneath a dried river. The container is not what the broker says it is.',
- theme:{ink:'#0C0A08',paper:'#E8DCC4',accent:'#C8873A',cold:'#4A7A7E',red:'#D6402E'},
+ theme:{ink:'#0C0A08',paper:'#E8DCC4',accent:'#E0A44C',cold:'#3FA5A8',red:'#E04B32'}, art:'film',
  hud:{type:'resolve',max:3,label:'Project K · The Last Drop'},
  seqs:12, weather:'dust',
- key:vb(300,120,rect(0,0,300,120,K_SKY)+sun(240,34,20)+
-   '<g transform="translate(0,-30) scale(1,.55)">'+complexTower()+'</g>'+
-   dune(76,'#B08A56')+rect(0,96,300,24,K_DARK)+ruinBlock(20,60,44,40,K_MID)+ruinBlock(210,52,60,48,K_MID)+
-   rig(150,96,.42,{lit:1})),
+ key:kKey(),
  openCard:{k:'Vertical slice · Cards S01-01 to S03-03',t:'The Last<br>Drop',b:'Project K',
    p:'Sequences one to three. Tap to turn the panels; the games are the action beats. Soft-fail throughout — a miss costs Resolve, never the scene.'},
  pages:[
@@ -715,8 +1237,9 @@ var STORIES=[
   accept:{kind:'hold',lbl:'ACCEPT.',tone:'ctx',name:'Accept the contract',bg:'contract',need:1200,dur:5000,ic:'HOLD',
     how:'Hold the contract panel for a beat',good:'Clean handshake',ok:'He noticed the hesitation',miss:'The panel timed out. He re-priced it.'},
   run:{kind:'runner',lbl:'RIDE!',tone:'',name:'Wasteland run',dur:32000,obs:K_OBS,types:['wreck','slab','pit'],
-    sky:'linear-gradient(180deg,#D9B87E 0%,#C4A374 40%,#6A5238 41%,#3A2E20 100%)',dust:1,
-    road:'#6A5238',stripe:'rgba(232,220,196,.22)',plw:'40%',player:rig(100,140,1.3,{lit:1}),playerVB:'0 0 200 250',how:'Swipe ◂ ▸ to change lane · ▴ to jump · tap raiders',jumpType:'pit',targets:'raider',targetEvery:3,
+    sky:'#241C12',bgSvg:kRunBg(),dust:1,
+    road:'#6A5238',stripe:'rgba(232,220,196,.26)',plw:'46%',
+    player:'<svg viewBox="0 0 240 200">'+kDefs('rb')+kBuggy('rb',120,120,1.05)+'</svg>',how:'Swipe ◂ ▸ to change lane · ▴ to jump · tap raiders',jumpType:'pit',targets:'raider',targetEvery:3,
     good:'Clean line. Bridge cleared.',ok:'Some damage dressing. Route continues.',miss:'You arrive late and dented.'},
   mark:{kind:'timing',lbl:'MARK.',tone:'threat',name:'Mark the carrier',bg:'overlook',cap:'One target. One pass.',
     dur:3000,zone:16,how:'Tap when the marker crosses the carrier',
@@ -767,7 +1290,7 @@ function rel(e){var r=phone.getBoundingClientRect();return {x:(e.clientX-r.left)
 /* ---- library ---- */
 function library(){
   S.running=false;ix.classList.remove('on');$('card2').classList.remove('on');$('dbrf').classList.remove('on');
-  pageEl.innerHTML='';backEl.classList.remove('on');objEl.classList.remove('on');
+  pageEl.innerHTML='';backEl.classList.remove('on');objEl.classList.remove('on');phone.removeAttribute('data-art');
   clk.style.display='none';resEl.classList.remove('on');hudT.textContent='';seqbar.innerHTML='';
   theme({ink:'#0B0B0F',paper:'#EFE6D2',accent:'#F2A33A',cold:'#3E6B85',red:'#C8352E'});
   var h='<div class="brand">Liquidnitro · Interactive Microdrama</div><h1>The Anthology</h1>'+
@@ -785,7 +1308,7 @@ function library(){
 }
 function open(i){
   ST=STORIES[i];SC=(ST.id==='seven-rains')?SR_SC:K_SC;
-  theme(ST.theme);$('lib').classList.add('off');backEl.classList.add('on');
+  theme(ST.theme);phone.setAttribute('data-art',ST.art||'comic');$('lib').classList.add('off');backEl.classList.add('on');
   hudT.textContent=ST.hud.label;
   S={pg:0,step:0,steps:[],running:false,t:0,order:[],busy:false,resolve:ST.hud.max||3,seq:0};
   seqbar.innerHTML=Array(ST.seqs).fill('<i></i>').join('');
@@ -953,10 +1476,11 @@ IXR.search=function(d){
 
 IXR.runner=function(d){
   ixOpen('<div class="run" id="run" style="background:'+d.sky+';--road:'+(d.road||'#232C36')+';--stripe:'+(d.stripe||'rgba(239,230,210,.16)')+'">'+
+    (d.bgSvg?'<div class="runbg">'+d.bgSvg+'</div>':'')+
     '<div class="road"></div><div class="stripes" id="str"></div>'+
     '<div class="lane" style="transform:rotate(17deg)"></div><div class="lane" style="transform:rotate(-17deg)"></div>'+
     '<div class="speed"></div><div id="obs"></div>'+
-    '<div class="pl" id="pl" style="--plw:'+(d.plw||'31%')+'">'+(d.playerVB?'<svg viewBox="'+d.playerVB+'">'+d.player+'</svg>':d.player)+'</div>'+
+    '<div class="pl" id="pl" style="--plw:'+(d.plw||'31%')+'">'+d.player+'</div>'+
     '<div class="hitfx" id="hitfx"></div>'+(d.rain?'<div class="wx"></div>':'')+(d.dust?'<div class="wx dust"></div>':'')+'</div>'+
     '<div class="ixhud"><div class="lbl '+(d.tone||'')+'">'+d.lbl+'</div><div class="cnt" id="cnt">0</div></div>'+
     '<div class="ixbar"><i id="bar"></i></div><div class="howto" id="howto">'+d.how+'</div>');

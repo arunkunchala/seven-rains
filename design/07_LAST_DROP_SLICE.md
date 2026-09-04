@@ -77,3 +77,32 @@ Adding a third story is a data object and a set of scene builders. No engine wor
 3. **S06-01→03** — the reveal. This is where green enters the palette for the first time, and where the global archive state object becomes load-bearing.
 
 Before S06, build the state layer: `archive_owner`, `archive_condition`, `resolve`, `bounty_status`, `rig_condition` — and the continuity validator against §10's invariants.
+
+---
+
+## Art pipeline (v0.5)
+
+The first pass was flat vector shapes. This one is a real rendering stack, still 100% inline SVG with no image assets — the whole app is one HTML file.
+
+**Lighting model.** Hard warm key from the sun, cool sky bounce on the shadow side. That single rule does most of the work: every form has a lit plane, a core shadow, and an unbroken rim along the lit edge. Spec §4 asks for *"faces readable through motivated bounce light"* — this is how.
+
+**The stack, back to front.**
+
+| Pass | What it does |
+|---|---|
+| Sky | 3-stop vertical gradient, thin blue at altitude down to bleached haze at the horizon |
+| Sun | Core disc plus a 3.2× radial bloom, blurred |
+| Depth layers | Three ridge/dune bands, each hazed further toward sky colour — atmospheric perspective |
+| Structures | Slab kit with a lit top edge, an occluded right edge, and damage cracks |
+| Volumetrics | God-ray cones on `mix-blend-mode: screen`, blurred |
+| Characters | Silhouette → skin gradient → core shadow → cheek hollow → brow ridge → features → gear → rim |
+| Air | Deterministic dust motes (seeded PRNG, so panels are stable across reloads) |
+| Grade | Radial vignette + `feTurbulence` grain on overlay |
+
+**Faces.** Rebuilt around hard forms — heavy brow ridge, hooded eyes reduced to a sliver under a weighted lid, sunken cheek, cut jaw, dry downturned mouth. The rim light rides the *true* outer silhouette (hair included) rather than floating over it, which was the tell that made the first pass look like clip art.
+
+**The entrance beat** (last panel of S03-03) uses a separate `kColossus` figure: small head against a massive body, wide stance, flared coat, and one unbroken lit edge running skull → shoulder → coat → boot. Scale reads from proportion and edge alone — no face is resolved, which is also what the spec wants for a reveal.
+
+**Per-story treatment.** Seven Rains keeps the halftone comic look. The Last Drop switches to `data-art="film"`: thin ink, fine grain instead of halftone, translucent caption plates. Same engine, two different visual registers.
+
+**Still placeholder.** Every figure is an original design and none of it is a likeness. The art quality is now high enough to read as intent rather than as unfinished, which makes it *more* important to say: these are not approved assets and the vehicle is not a film design. Swap points are unchanged.
