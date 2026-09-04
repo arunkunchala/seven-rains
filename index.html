@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Seven Rains — Prototypes</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Oswald:wght@400;600&family=Barlow+Semi+Condensed:wght@400;600;700&display=swap">
+<style>
+:root{--ink:#0B0B0F;--paper:#EFE6D2;--amber:#F2A33A;--cold:#3E6B85;--red:#C8352E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--paper);
+  font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;font-size:16px;line-height:1.5;
+  background-image:radial-gradient(rgba(255,255,255,.05) .6px,transparent .7px);background-size:3px 3px;
+  padding:0 0 60px}
+.wrap{max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 32px) 20px 0}
+header{border-bottom:4px solid var(--paper);padding-bottom:18px}
+.k{font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--amber)}
+h1{font-family:"Bangers",Impact,sans-serif;font-weight:400;font-size:clamp(48px,13vw,76px);line-height:.9;margin:10px 0 0;
+  letter-spacing:.03em;text-shadow:5px 5px 0 var(--amber)}
+h1 small{display:block;font-size:.32em;color:var(--amber);text-shadow:3px 3px 0 var(--ink);letter-spacing:.06em}
+.lede{color:#BFB29A;margin:16px 0 0;font-weight:600}
+h2{font-family:"Oswald",sans-serif;font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);
+  margin:34px 0 12px;font-weight:600}
+a.card{display:block;text-decoration:none;color:inherit;border:3px solid var(--paper);background:#14141A;
+  padding:16px 18px;margin-bottom:12px;box-shadow:6px 6px 0 var(--amber);transition:transform .12s,box-shadow .12s}
+a.card:active{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--amber)}
+a.card.muted{box-shadow:6px 6px 0 #2A2A33;border-color:#57575F;color:#8E8E98}
+a.card .n{font-family:"Bangers",Impact,sans-serif;font-size:26px;letter-spacing:.04em;color:var(--paper)}
+a.card.muted .n{color:#8E8E98}
+a.card .d{font-size:15px;color:#BFB29A;margin-top:2px}
+a.card.muted .d{color:#75757E}
+.tag{display:inline-block;font-family:"Oswald",sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  background:var(--amber);color:var(--ink);padding:2px 7px;margin-bottom:8px;font-weight:600}
+.tag.old{background:#3A3A44;color:#9A9AA4}
+ul.docs{list-style:none;padding:0;margin:0}
+ul.docs li{border-top:2px solid rgba(239,230,210,.15);padding:10px 0}
+ul.docs a{color:var(--paper);text-decoration:none;font-weight:600}
+ul.docs a:hover{color:var(--amber)}
+ul.docs span{display:block;font-size:14px;color:#8E8E98;font-weight:400}
+footer{margin-top:40px;border-top:2px solid rgba(239,230,210,.15);padding-top:14px;font-size:13px;color:#75757E}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="k">Liquidnitro · Interactive Microdrama POC</div>
+    <h1>Seven<br>Rains<small>Case One · The Glasshouse</small></h1>
+    <p class="lede">A comic-book detective microdrama. Seven daily episodes, twelve minutes each, told in panels with hypercasual mini-games as the action beats.</p>
+  </header>
+
+  <h2>Play — best on a phone</h2>
+
+  <a class="card" href="prototype/seven-rains-v3.html">
+    <span class="tag">Current · v0.3</span>
+    <div class="n">Issue 1 — Sequence 1</div>
+    <div class="d">Comic panels, a lane runner, spot-the-clue and three QTEs. About 3½ minutes.</div>
+  </a>
+
+  <a class="card muted" href="prototype/seven-rains-v2.html">
+    <span class="tag old">Archive · v0.2</span>
+    <div class="n">Animatic slice</div>
+    <div class="d">Nine gesture beats over rendered figures. Superseded — no clarity, no game.</div>
+  </a>
+
+  <a class="card muted" href="prototype/seven-rains-demo.html">
+    <span class="tag old">Archive · v0.1</span>
+    <div class="n">Gesture testbed</div>
+    <div class="d">Seven timing windows, no story. Kept for the tuning data.</div>
+  </a>
+
+  <h2>Design docs</h2>
+  <ul class="docs">
+    <li><a href="design/06_EPISODE_PACING.md">06 · Episode pacing</a><span>The 12-minute structure — comic pages × mini-games, density rules, the Issue 1 map</span></li>
+    <li><a href="design/05_V02_REDESIGN.md">05 · v0.2 redesign</a><span>Audit of what was wrong and the gesture reskin that fixed it</span></li>
+    <li><a href="design/04_MARKET_CONTEXT.md">04 · Market context</a><span>How microdrama actually works, and why interactive video keeps dying</span></li>
+    <li><a href="design/03_EVENT_AND_RETENTION.md">03 · Event &amp; retention</a><span>Live-event window, catch-up, the Case Board, notifications</span></li>
+    <li><a href="design/02_INTERACTION_SYSTEM.md">02 · Interaction system</a><span>20 verbs in 5 classes, three-tier outcomes, anti-repetition rules</span></li>
+    <li><a href="design/01_STORY_BIBLE.md">01 · Story bible</a><span>The case, the cast, the solution, the seven-day clue chain</span></li>
+  </ul>
+
+  <footer>Prototypes are self-contained HTML — no build step, no dependencies. Open any of them directly.</footer>
+</div>
+</body>
+</html>
