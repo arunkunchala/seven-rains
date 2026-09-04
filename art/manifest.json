@@ -1,0 +1,249 @@
+{
+ "version": 1,
+ "base": "art/",
+ "note": "Drop files at base+path. Missing files fall back to the greybox SVG.",
+ "slots": {
+  "seven-rains": {
+   "atrium": {
+    "path": "sr/atrium.webp",
+    "uses": 1,
+    "primary_aspect": 1.468,
+    "generate_at": "1536x1024",
+    "also_used_at": null
+   },
+   "bedroom": {
+    "path": "sr/bedroom.webp",
+    "uses": 2,
+    "primary_aspect": 1.468,
+    "generate_at": "1536x1024",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "boyClose": {
+    "path": "sr/boyClose.webp",
+    "uses": 1,
+    "primary_aspect": 0.533,
+    "generate_at": "576x1088",
+    "also_used_at": null
+   },
+   "boyCurb": {
+    "path": "sr/boyCurb.webp",
+    "uses": 1,
+    "primary_aspect": 0.533,
+    "generate_at": "576x1088",
+    "also_used_at": null
+   },
+   "city": {
+    "path": "sr/city.webp",
+    "uses": 1,
+    "primary_aspect": 1.468,
+    "generate_at": "1536x1024",
+    "also_used_at": null
+   },
+   "rClose": {
+    "path": "sr/rClose.webp",
+    "uses": 2,
+    "primary_aspect": 0.533,
+    "generate_at": "576x1088",
+    "also_used_at": [
+     "1536x1024"
+    ]
+   },
+   "rShout": {
+    "path": "sr/rShout.webp",
+    "uses": 3,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "rTape": {
+    "path": "sr/rTape.webp",
+    "uses": 2,
+    "primary_aspect": 0.533,
+    "generate_at": "576x1088",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "ride": {
+    "path": "sr/ride.webp",
+    "uses": 1,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": null
+   },
+   "salimVan": {
+    "path": "sr/salimVan.webp",
+    "uses": 1,
+    "primary_aspect": 0.872,
+    "generate_at": "896x1024",
+    "also_used_at": null
+   },
+   "scene": {
+    "path": "sr/scene.webp",
+    "uses": 2,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "vClose": {
+    "path": "sr/vClose.webp",
+    "uses": 2,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": [
+     "1536x1024"
+    ]
+   },
+   "vDet": {
+    "path": "sr/vDet.webp",
+    "uses": 2,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "vKneel": {
+    "path": "sr/vKneel.webp",
+    "uses": 1,
+    "primary_aspect": 1.468,
+    "generate_at": "1536x1024",
+    "also_used_at": null
+   },
+   "vPhone": {
+    "path": "sr/vPhone.webp",
+    "uses": 1,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "vanLeaves": {
+    "path": "sr/vanLeaves.webp",
+    "uses": 1,
+    "primary_aspect": 0.872,
+    "generate_at": "896x1024",
+    "also_used_at": null
+   }
+  },
+  "last-drop": {
+   "carrierC": {
+    "path": "k/carrierC.webp",
+    "uses": 2,
+    "primary_aspect": 0.533,
+    "generate_at": "576x1088",
+    "also_used_at": [
+     "1024x1024"
+    ]
+   },
+   "chamber": {
+    "path": "k/chamber.webp",
+    "uses": 2,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "contract": {
+    "path": "k/contract.webp",
+    "uses": 2,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "descent": {
+    "path": "k/descent.webp",
+    "uses": 1,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": null
+   },
+   "giantEnter": {
+    "path": "k/giantEnter.webp",
+    "uses": 1,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "highway": {
+    "path": "k/highway.webp",
+    "uses": 1,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": null
+   },
+   "holo": {
+    "path": "k/holo.webp",
+    "uses": 2,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "hunterAng": {
+    "path": "k/hunterAng.webp",
+    "uses": 1,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "hunterC": {
+    "path": "k/hunterC.webp",
+    "uses": 3,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "hunterDet": {
+    "path": "k/hunterDet.webp",
+    "uses": 3,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": [
+     "576x1088"
+    ]
+   },
+   "market": {
+    "path": "k/market.webp",
+    "uses": 2,
+    "primary_aspect": 0.969,
+    "generate_at": "1024x1024",
+    "also_used_at": null
+   },
+   "overlook": {
+    "path": "k/overlook.webp",
+    "uses": 2,
+    "primary_aspect": 0.872,
+    "generate_at": "896x1024",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "roofs": {
+    "path": "k/roofs.webp",
+    "uses": 2,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   },
+   "shaft": {
+    "path": "k/shaft.webp",
+    "uses": 2,
+    "primary_aspect": 0.479,
+    "generate_at": "1024x2112",
+    "also_used_at": [
+     "1024x1984"
+    ]
+   }
+  }
+ }
+}

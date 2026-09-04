@@ -83,6 +83,10 @@ body{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;color:var(--p
 .panel.on{opacity:1;transform:none}
 .panel.tilt,.panel.on.tilt{transform:rotate(-1.2deg) scale(1.02)}
 .panel svg{position:absolute;inset:0;width:100%;height:100%}
+.plate{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:1}
+.lay{position:absolute;z-index:2;transform:translate(-50%,-100%);pointer-events:none}
+.lay img{display:block;width:100%;height:auto}
+.gb{position:absolute;inset:0;z-index:0}
 .ht{position:absolute;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.5;
   background:radial-gradient(rgba(0,0,0,.55) .7px,transparent .8px) 0 0/4px 4px}
 .phone[data-art="film"] .ht{mix-blend-mode:overlay;opacity:.18;
@@ -187,6 +191,7 @@ body{font-family:"Barlow Semi Condensed","Arial Narrow",sans-serif;color:var(--p
 
 /* SEARCH */
 .hot{position:absolute;width:20%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);z-index:5}
+.panel.hasplate .ht{opacity:.10}
 .hot.found::after{content:"";position:absolute;inset:8%;border:3px solid var(--accent);border-radius:50%;box-shadow:0 0 0 3px var(--ink)}
 .inset{pointer-events:none;position:absolute;left:8%;right:8%;bottom:calc(env(safe-area-inset-bottom,0px) + 21%);
   z-index:8;background:var(--paper);color:#0B0B0F;border:4px solid #0B0B0F;box-shadow:0 0 0 2px var(--paper),8px 8px 0 #0B0B0F;
@@ -1073,6 +1078,39 @@ function kRunBg(){return KSVG(300,300,function(p,w,h){
  });}
 
 /* =================================================================
+   ART SLOTS
+   Drop a file into art/ and the panel upgrades. No code change.
+   Missing or failed files fall back to the greybox SVG underneath,
+   so the build is never broken by absent art.
+   ================================================================= */
+var ART_BASE='art/';
+/* exposed so a build step (or a test) can register art without editing this file */
+var ART={
+ 'last-drop':{
+   /* descent:'k/s01_01_descent.webp', */
+   /* market:'k/s01_01_market.webp',   */
+   /* holo:'k/s01_02_holo.webp',       */
+   /* hunterC:'k/ch/hunter_smirk.webp',*/
+   /* ...see art/manifest.json for the full slot list */
+ },
+ 'seven-rains':{}
+};
+/* optional composited character layers, per scene */
+var LAYERS={ 'last-drop':{}, 'seven-rains':{} };
+
+function plate(name){
+  var f = ART[ST.id] && ART[ST.id][name];
+  var gb = '<div class="gb">'+(SC[name]||'')+'</div>';
+  if(!f) return gb;
+  var img = '<img class="plate" src="'+ART_BASE+f+'" alt="" '+
+            'onerror="this.remove()" onload="this.parentNode.classList.add(\'hasplate\')">';
+  var ly = (LAYERS[ST.id]&&LAYERS[ST.id][name]||[]).map(function(l){
+    return '<div class="lay" style="left:'+l.x+';top:'+l.y+';width:'+l.w+'">'+
+           '<img src="'+ART_BASE+l.src+'" alt="" onerror="this.parentNode.remove()"></div>';}).join('');
+  return gb+img+ly;
+}
+
+/* =================================================================
    STORY DEFINITIONS
    ================================================================= */
 function cap(t,pos,a){return {cap:t,pos:pos,amber:a};}
@@ -1340,7 +1378,7 @@ function render(i){
   pageEl.setAttribute('data-l',pg.l);pageEl.innerHTML='';S.steps=[];
   pg.panels.forEach(function(p,pi){
     var d=document.createElement('div');d.className='panel'+(p.tilt?' tilt':'');
-    d.innerHTML=SC[p.art]+'<div class="ht"></div>'+(p.wx?'<div class="wx'+(p.wx==='dust'?' dust':'')+'"></div>':'');
+    d.innerHTML=plate(p.art)+'<div class="ht"></div>'+(p.wx?'<div class="wx'+(p.wx==='dust'?' dust':'')+'"></div>':'');
     p.items.forEach(function(it,ii){
       var e;
       if('cap' in it){e=document.createElement('div');e.className='cap'+(it.amber?' amber':'');e.textContent=it.cap;e.style.cssText=it.pos;}
@@ -1399,7 +1437,7 @@ function shell(d,inner,extra){
   var b=d.balloon?'<div class="bal on '+(d.balloon.kind||'')+'" data-t="'+(d.balloon.tail||'bl')+'" style="top:8px;left:8px">'+
     '<span class="who">'+d.balloon.who+'</span>'+d.balloon.t+'</div>':'';
   return '<div class="page" data-l="1" style="z-index:1"><div class="panel on" id="ixp">'+
-    (d.bg?SC[d.bg]:'')+'<div class="ht"></div>'+cap+b+(inner||'')+'</div></div>'+
+    (d.bg?plate(d.bg):'')+'<div class="ht"></div>'+cap+b+(inner||'')+'</div></div>'+
     '<div class="ixhud"><div class="lbl '+(d.tone||'')+'">'+d.lbl+'</div>'+(d.cnt?'<div class="cnt" id="cnt">'+d.cnt+'</div>':'')+'</div>'+
     (d.nobar?'':'<div class="ixbar"><i id="bar"></i></div>')+
     (extra||'')+'<div class="howto" id="howto">'+d.how+'</div>';
@@ -1645,6 +1683,19 @@ function finish(){
     if(idle>4&&!S.busy&&S.steps.length)tapcue.classList.add('on');}
   requestAnimationFrame(loop);})(performance.now());
 
+window.MicrodramaArt={base:function(v){ART_BASE=v;},
+  set:function(story,map){for(var k in map)ART[story][k]=map[k];},
+  layers:function(story,map){for(var k in map)LAYERS[story][k]=map[k];},
+  slots:function(){return {stories:STORIES.map(function(s){return s.id}),art:ART};},
+  usage:function(){var AR={'1':[0.479],'2':[0.969,0.969],'3':[1.468,1.468,1.468],
+      '12':[0.872,0.533,0.533],'21':[0.533,0.533,0.872]},out={};
+    STORIES.forEach(function(st){var u={};
+      st.pages.forEach(function(pg,pi){ if(!pg.panels)return;
+        pg.panels.forEach(function(pn,ix){ (u[pn.art]=u[pn.art]||[]).push({page:pi,ar:AR[pg.l][ix]}); });});
+      Object.keys(st.ix).forEach(function(k){var d=st.ix[k];
+        if(d.bg)(u[d.bg]=u[d.bg]||[]).push({ix:k,ar:0.518});});
+      out[st.id]=u;});
+    return out;}};
 library();
 })();
 </script>
